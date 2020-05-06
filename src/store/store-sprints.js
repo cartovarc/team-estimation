@@ -33,16 +33,8 @@ const actions = {
     dispatch("fbUpdateSprint", payload);
   },
 
-  updateActivitie({ dispatch }, payload) {
-    dispatch("fbUpdateActivitie", payload);
-  },
-
   deleteSprint({ dispatch }, id) {
     dispatch("fbDeleteSprint", id);
-  },
-
-  deleteActivitie({ dispatch }, ids) {
-    dispatch("fbDeleteActivitie", ids);
   },
 
   addSprint({ dispatch }, sprint) {
@@ -52,16 +44,6 @@ const actions = {
       sprint: sprint
     };
     dispatch("fbAddSprint", payload);
-  },
-
-  addActivitie({ dispatch }, payload) {
-    let newActivitieId = uid();
-
-    dispatch("fbAddActivitie", {
-      id: newActivitieId,
-      sprintId: payload.sprintId,
-      activitie: payload.activitieToSubmit
-    });
   },
 
   setSprintsDownloaded({ commit }, value) {
@@ -123,47 +105,11 @@ const actions = {
     });
   },
 
-  fbAddActivitie({}, payload) {
-    let activitieRef = firebaseDb.ref(
-      "sprints/" +
-        enterpriseId +
-        "/" +
-        payload.sprintId +
-        "/activities/" +
-        payload.id
-    );
-    activitieRef.set(payload.activitie, error => {
-      if (error) {
-        showErrorMessage(error.message);
-      } else {
-        Notify.create("Activitie added");
-      }
-    });
-  },
-
   fbUpdateSprint({}, payload) {
     let sprintRef = firebaseDb.ref(
       "sprints/" + enterpriseId + "/" + payload.id
     );
     sprintRef.update(payload.updates, error => {
-      if (error) {
-        showErrorMessage(error.message);
-      } else {
-        Notify.create("Sprint updated");
-      }
-    });
-  },
-
-  fbUpdateActivitie({}, payload) {
-    let activitieRef = firebaseDb.ref(
-      "sprints/" +
-        enterpriseId +
-        "/" +
-        payload.sprintId +
-        "/activities/" +
-        payload.activitieId
-    );
-    activitieRef.update(payload.updates, error => {
       if (error) {
         showErrorMessage(error.message);
       } else {
@@ -179,23 +125,6 @@ const actions = {
         showErrorMessage(error.message);
       } else {
         Notify.create("Sprint deleted");
-      }
-    });
-  },
-  fbDeleteActivitie({}, ids) {
-    let activitieRef = firebaseDb.ref(
-      "sprints/" +
-        enterpriseId +
-        "/" +
-        ids.sprintId +
-        "/activities/" +
-        ids.activitieId
-    );
-    activitieRef.remove(error => {
-      if (error) {
-        showErrorMessage(error.message);
-      } else {
-        Notify.create("Activitie deleted");
       }
     });
   }

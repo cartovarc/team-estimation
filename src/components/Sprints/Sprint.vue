@@ -44,7 +44,7 @@
           size="xs"
           round
           dense
-          color="primary"
+          color="blue-5"
           icon="edit"
         />
         <q-btn

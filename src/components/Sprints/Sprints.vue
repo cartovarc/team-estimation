@@ -5,25 +5,27 @@
         <sprint class="q-ma-none q-pa-none" :sprint="sprint" :id="key">
         </sprint>
       </list-header>
-      <q-list bordered separated>
-        <activitie
-          v-for="(activitie, key2) in sprint.activities"
-          v-bind:key="activitie.id"
-          :activitie="activitie"
-          :sprintId="key"
-          :activitieId="key2"
-        />
+      <q-list v-if="activitiesDownloaded" bordered separated>
+        <div v-for="(activity, key2) in activities" v-bind:key="activity.id">
+          <activitie
+            v-if="activity.sprint == key"
+            :activity="activity"
+            :activityId="key2"
+          />
+        </div>
       </q-list>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 
 export default {
   props: ["sprints"],
-  computed: {},
+  computed: {
+    ...mapState("activities", ["activities", "activitiesDownloaded"])
+  },
   components: {
     sprint: require("components/Sprints/Sprint.vue").default,
     "list-header": require("components/Shared/ListHeader.vue").default,

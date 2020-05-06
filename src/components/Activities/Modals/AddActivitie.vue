@@ -1,12 +1,12 @@
 <template>
   <q-card>
-    <modal-header>Add activitie</modal-header>
+    <modal-header>Add activity</modal-header>
     <q-form @submit="submitForm()">
       <q-card-section class="q-pt-none">
         <modal-model-name
           ref="modalModelName"
           label="Activitie name"
-          :name.sync="activitieToSubmit.name"
+          :name.sync="activityToSubmit.name"
         />
       </q-card-section>
       <modal-buttons></modal-buttons>
@@ -23,17 +23,18 @@ export default {
   props: ["sprintId"],
   data() {
     return {
-      activitieToSubmit: {
+      activityToSubmit: {
         name: "",
         completed: false
       }
     };
   },
   methods: {
-    ...mapActions("sprints", ["addActivitie"]),
+    ...mapActions("activities", ["addActivity"]),
     submitModel() {
-      this.addActivitie({
-        activitieToSubmit: this.activitieToSubmit,
+      this.activityToSubmit["sprint"] = this.sprintId;
+      this.addActivity({
+        activity: this.activityToSubmit,
         sprintId: this.sprintId
       });
       this.$emit("close");

@@ -3,34 +3,33 @@
     v-ripple
     v-touch-hold:1000.mouse="showEditActivitieModal"
     @click="
-      updateActivitie({
-        activitieId: activitieId,
-        sprintId: sprintId,
-        updates: { completed: !activitie.completed }
+      updateActivity({
+        id: activityId,
+        updates: { completed: !activity.completed }
       })
     "
-    :class="activitie.completed ? 'bg-green-2' : 'bg-amber-2'"
+    :class="activity.completed ? 'bg-green-2' : 'bg-amber-2'"
     clickable
   >
     <q-item-section side top>
-      <q-checkbox :value="activitie.completed" class="no-pointer-events" />
+      <q-checkbox :value="activity.completed" class="no-pointer-events" />
     </q-item-section>
 
     <q-item-section>
-      <q-item-label :class="{ 'text-strikethrough': activitie.completed }">
-        {{ activitie.name }}
+      <q-item-label :class="{ 'text-strikethrough': activity.completed }">
+        {{ activity.name }}
       </q-item-label>
     </q-item-section>
 
-    <q-item-section v-if="activitie.dueDate" side>
+    <q-item-section v-if="activity.dueDate" side>
       <div class="row">
         <div class="colum">
           <q-item-label class="row justify-end" caption>
-            {{ activitie.dueDate | niceDate }}
+            {{ activity.dueDate | niceDate }}
           </q-item-label>
           <q-item-label class="row justify-end" caption>
             <small>
-              {{ activitieDueTime }}
+              {{ activityDueTime }}
             </small>
           </q-item-label>
         </div>
@@ -62,11 +61,10 @@
     </q-item-section>
 
     <q-dialog v-model="showEditActivitie">
-      <edit-activitie
+      <edit-activity
         @close="showEditActivitie = false"
-        :activitie="activitie"
-        :activitieId="activitieId"
-        :sprintId="sprintId"
+        :activity="activity"
+        :activityId="activityId"
       />
     </q-dialog>
   </q-item>
@@ -78,25 +76,25 @@ import { date } from "quasar";
 const { formatDate } = date;
 
 export default {
-  props: ["activitie", "activitieId", "sprintId"],
+  props: ["activity", "activityId"],
   data() {
     return {
       showEditActivitie: false
     };
   },
   computed: {
-    activitieDueTime() {
+    activityDueTime() {
       if (this.settings.show12HourTimeFormat) {
         return date.formatDate(
-          this.activitie.dueDate + " " + this.activitie.dueTime,
+          this.activity.dueDate + " " + this.activity.dueTime,
           "h:mmA"
         );
       }
-      return this.activitie.dueTime;
+      return this.activity.dueTime;
     }
   },
   methods: {
-    ...mapActions("sprints", ["updateActivitie", "deleteActivitie"]),
+    ...mapActions("activities", ["updateActivity", "deleteActivity"]),
     promptToDelete() {
       this.$q
         .dialog({
@@ -106,10 +104,7 @@ export default {
           persistent: true
         })
         .onOk(() => {
-          this.deleteActivitie({
-            sprintId: this.sprintId,
-            activitieId: this.activitieId
-          });
+          this.deleteActivity(this.activityId);
         });
     },
     showEditActivitieModal() {
@@ -122,7 +117,7 @@ export default {
     }
   },
   components: {
-    "edit-activitie": require("components/Activities/Modals/EditActivitie.vue")
+    "edit-activity": require("components/Activities/Modals/EditActivitie.vue")
       .default
   }
 };

@@ -82,8 +82,14 @@ export default {
           title: "Backlog",
           caption:
             "Add sprints, add activities, make activities estimations, assign activities as completed and report their real time of completion",
-          icon: "timeline",
+          icon: "event",
           to: "/"
+        },
+        {
+          title: "Settings",
+          caption: "Configurations and parameters",
+          icon: "settings",
+          to: "/settings"
         }
       ]
     };
