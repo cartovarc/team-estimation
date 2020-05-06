@@ -9,8 +9,8 @@
       v-select-all
       clearable
       clear-icon="close"
-      ref="sprintName"
-      label="Sprint name"
+      :ref="assignedRef"
+      :label="label"
     />
   </div>
 </template>
@@ -19,7 +19,7 @@
 import { selectAll } from "src/directives/directive-select-all.js";
 
 export default {
-  props: ["name"],
+  props: ["name", "assignedRef", "label"],
   directives: {
     selectAll
   }

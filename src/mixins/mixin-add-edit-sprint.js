@@ -12,15 +12,14 @@ export default {
     }
   },
   components: {
-    "modal-header": require("components/Sprints/Modals/Shared/ModalHeader.vue")
+    "modal-header": require("components/Shared/Modals/ModalHeader.vue").default,
+    "modal-model-name": require("components/Shared/Modals/ModalModelName.vue")
       .default,
-    "modal-sprint-name": require("components/Sprints/Modals/Shared/ModalSprintName.vue")
+    "modal-due-date": require("components/Shared/Modals/ModalDueDate.vue")
       .default,
-    "modal-due-date": require("components/Sprints/Modals/Shared/ModalDueDate.vue")
+    "modal-due-time": require("components/Shared/Modals/ModalDueTime.vue")
       .default,
-    "modal-due-time": require("components/Sprints/Modals/Shared/ModalDueTime.vue")
-      .default,
-    "modal-buttons": require("components/Sprints/Modals/Shared/ModalButtons.vue")
+    "modal-buttons": require("components/Shared/Modals/ModalButtons.vue")
       .default
   }
 };

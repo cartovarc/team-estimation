@@ -3,8 +3,10 @@
     <modal-header>Add sprint</modal-header>
     <q-form @submit="submitForm()">
       <q-card-section class="q-pt-none">
-        <modal-sprint-name
+        <modal-model-name
           ref="modalSprintName"
+          assignedRef="sprintName"
+          label="Sprint name"
           :name.sync="sprintToSubmit.name"
         />
         <modal-due-date
