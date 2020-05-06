@@ -41,6 +41,10 @@ const actions = {
     dispatch("fbDeleteSprint", id);
   },
 
+  deleteActivitie({ dispatch }, ids) {
+    dispatch("fbDeleteActivitie", ids);
+  },
+
   addSprint({ dispatch }, sprint) {
     let id = uid();
     let payload = {
@@ -50,11 +54,21 @@ const actions = {
     dispatch("fbAddSprint", payload);
   },
 
+  addActivitie({ dispatch }, payload) {
+    let newActivitieId = uid();
+
+    dispatch("fbAddActivitie", {
+      id: newActivitieId,
+      sprintId: payload.sprintId,
+      activitie: payload.activitieToSubmit
+    });
+  },
+
   setSprintsDownloaded({ commit }, value) {
     commit("setSprintsDownloaded", value);
   },
 
-  fbReadData({ commit }) {
+  fbReadData({ commit, getters }) {
     let enterpriseSprints = firebaseDb.ref("sprints/" + enterpriseId);
 
     // check initial data
@@ -109,6 +123,24 @@ const actions = {
     });
   },
 
+  fbAddActivitie({}, payload) {
+    let activitieRef = firebaseDb.ref(
+      "sprints/" +
+        enterpriseId +
+        "/" +
+        payload.sprintId +
+        "/activities/" +
+        payload.id
+    );
+    activitieRef.set(payload.activitie, error => {
+      if (error) {
+        showErrorMessage(error.message);
+      } else {
+        Notify.create("Activitie added");
+      }
+    });
+  },
+
   fbUpdateSprint({}, payload) {
     let sprintRef = firebaseDb.ref(
       "sprints/" + enterpriseId + "/" + payload.id
@@ -147,6 +179,23 @@ const actions = {
         showErrorMessage(error.message);
       } else {
         Notify.create("Sprint deleted");
+      }
+    });
+  },
+  fbDeleteActivitie({}, ids) {
+    let activitieRef = firebaseDb.ref(
+      "sprints/" +
+        enterpriseId +
+        "/" +
+        ids.sprintId +
+        "/activities/" +
+        ids.activitieId
+    );
+    activitieRef.remove(error => {
+      if (error) {
+        showErrorMessage(error.message);
+      } else {
+        Notify.create("Activitie deleted");
       }
     });
   }

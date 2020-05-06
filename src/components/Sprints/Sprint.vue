@@ -32,7 +32,7 @@
     <q-item-section style="min-width: 80px" side>
       <div class="row">
         <q-btn
-          @click.stop="function() {}"
+          @click.stop="showAddSprintModal"
           size="xs"
           round
           dense
@@ -61,6 +61,10 @@
     <q-dialog v-model="showEditSprint">
       <edit-sprint @close="showEditSprint = false" :sprint="sprint" :id="id" />
     </q-dialog>
+
+    <q-dialog v-model="showAddSprint">
+      <add-activitie @close="showAddSActivitie = false" :sprintId="id" />
+    </q-dialog>
   </q-item>
 </template>
 
@@ -73,7 +77,8 @@ export default {
   props: ["sprint", "id"],
   data() {
     return {
-      showEditSprint: false
+      showEditSprint: false,
+      showAddSprint: false
     };
   },
   computed: {
@@ -96,6 +101,9 @@ export default {
     },
     showEditSprintModal() {
       this.showEditSprint = true;
+    },
+    showAddSprintModal() {
+      this.showAddSprint = true;
     }
   },
   filters: {
@@ -119,7 +127,9 @@ export default {
     }
   },
   components: {
-    "edit-sprint": require("components/Sprints/Modals/EditSprint.vue").default
+    "edit-sprint": require("components/Sprints/Modals/EditSprint.vue").default,
+    "add-activitie": require("components/Activities/Modals/AddActivitie.vue")
+      .default
   }
 };
 </script>

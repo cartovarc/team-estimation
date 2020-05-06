@@ -1,12 +1,12 @@
 <template>
   <q-card>
-    <modal-header>Add sprint</modal-header>
+    <modal-header>Add activitie</modal-header>
     <q-form @submit="submitForm()">
       <q-card-section class="q-pt-none">
         <modal-model-name
           ref="modalModelName"
-          label="Sprint name"
-          :name.sync="sprintToSubmit.name"
+          label="Activitie name"
+          :name.sync="activitieToSubmit.name"
         />
       </q-card-section>
       <modal-buttons></modal-buttons>
@@ -16,28 +16,27 @@
 
 <script>
 import { mapActions } from "vuex";
-import addEditSprintMixin from "src/mixins/mixin-add-edit-model.js";
+import addEditActivitieMixin from "src/mixins/mixin-add-edit-model.js";
 
 export default {
-  mixins: [addEditSprintMixin],
+  mixins: [addEditActivitieMixin],
+  props: ["sprintId"],
   data() {
     return {
-      sprintToSubmit: {
+      activitieToSubmit: {
         name: "",
-        dueDate: "",
-        dueTime: ""
+        completed: false
       }
     };
   },
   methods: {
-    ...mapActions("sprints", ["addSprint"]),
+    ...mapActions("sprints", ["addActivitie"]),
     submitModel() {
-      this.addSprint(this.sprintToSubmit);
+      this.addActivitie({
+        activitieToSubmit: this.activitieToSubmit,
+        sprintId: this.sprintId
+      });
       this.$emit("close");
-    },
-    clearDueDate() {
-      this.sprintToSubmit.dueDate = "";
-      this.sprintToSubmit.dueTime = "";
     }
   }
 };

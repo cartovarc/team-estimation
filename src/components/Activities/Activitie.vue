@@ -106,7 +106,10 @@ export default {
           persistent: true
         })
         .onOk(() => {
-          this.deleteActivitie(this.activitieId, this.sprintId);
+          this.deleteActivitie({
+            sprintId: this.sprintId,
+            activitieId: this.activitieId
+          });
         });
     },
     showEditActivitieModal() {
