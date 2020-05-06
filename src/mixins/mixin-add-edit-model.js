@@ -1,9 +1,9 @@
 export default {
   methods: {
     submitForm() {
-      this.$refs.modalSprintName.$refs.sprintName.validate();
-      if (!this.$refs.modalSprintName.$refs.sprintName.hasError) {
-        this.submitSprint();
+      this.$refs.modalModelName.$refs.modalName.validate();
+      if (!this.$refs.modalModelName.$refs.modalName.hasError) {
+        this.submitModel();
       }
     },
     clearDueDate() {

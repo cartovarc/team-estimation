@@ -9,7 +9,7 @@
       v-select-all
       clearable
       clear-icon="close"
-      :ref="assignedRef"
+      ref="modalName"
       :label="label"
     />
   </div>
@@ -19,7 +19,7 @@
 import { selectAll } from "src/directives/directive-select-all.js";
 
 export default {
-  props: ["name", "assignedRef", "label"],
+  props: ["name", "label"],
   directives: {
     selectAll
   }

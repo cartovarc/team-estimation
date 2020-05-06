@@ -32,9 +32,15 @@ const actions = {
   updateSprint({ dispatch }, payload) {
     dispatch("fbUpdateSprint", payload);
   },
+
+  updateActivitie({ dispatch }, payload) {
+    dispatch("fbUpdateActivitie", payload);
+  },
+
   deleteSprint({ dispatch }, id) {
     dispatch("fbDeleteSprint", id);
   },
+
   addSprint({ dispatch }, sprint) {
     let id = uid();
     let payload = {
@@ -43,9 +49,11 @@ const actions = {
     };
     dispatch("fbAddSprint", payload);
   },
+
   setSprintsDownloaded({ commit }, value) {
     commit("setSprintsDownloaded", value);
   },
+
   fbReadData({ commit }) {
     let enterpriseSprints = firebaseDb.ref("sprints/" + enterpriseId);
 
@@ -87,6 +95,7 @@ const actions = {
       commit("deleteSprint", sprintId);
     });
   },
+
   fbAddSprint({}, payload) {
     let sprintRef = firebaseDb.ref(
       "sprints/" + enterpriseId + "/" + payload.id
@@ -99,6 +108,7 @@ const actions = {
       }
     });
   },
+
   fbUpdateSprint({}, payload) {
     let sprintRef = firebaseDb.ref(
       "sprints/" + enterpriseId + "/" + payload.id
@@ -107,13 +117,29 @@ const actions = {
       if (error) {
         showErrorMessage(error.message);
       } else {
-        let keys = Object.keys(payload.updates);
-        if (!(keys.includes("completed") && keys.length == 1)) {
-          Notify.create("Sprint updated");
-        }
+        Notify.create("Sprint updated");
       }
     });
   },
+
+  fbUpdateActivitie({}, payload) {
+    let activitieRef = firebaseDb.ref(
+      "sprints/" +
+        enterpriseId +
+        "/" +
+        payload.sprintId +
+        "/activities/" +
+        payload.activitieId
+    );
+    activitieRef.update(payload.updates, error => {
+      if (error) {
+        showErrorMessage(error.message);
+      } else {
+        Notify.create("Sprint updated");
+      }
+    });
+  },
+
   fbDeleteSprint({}, sprintId) {
     let sprintRef = firebaseDb.ref("sprints/" + enterpriseId + "/" + sprintId);
     sprintRef.remove(error => {

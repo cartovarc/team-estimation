@@ -79,16 +79,9 @@ export default {
       leftDrawerOpen: false,
       navLinks: [
         {
-          title: "Configure Backlog",
-          caption:
-            "Add sprints, add activities and make activities estimations",
-          icon: "list",
-          to: "/"
-        },
-        {
           title: "Backlog",
           caption:
-            "Assign activities as completed and report their real time of completion",
+            "Add sprints, add activities, make activities estimations, assign activities as completed and report their real time of completion",
           icon: "timeline",
           to: "/"
         }

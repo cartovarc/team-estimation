@@ -4,8 +4,7 @@
     <q-form @submit="submitForm()">
       <q-card-section class="q-pt-none">
         <modal-model-name
-          ref="modalSprintName"
-          assignedRef="sprintName"
+          ref="modalModelName"
           label="Sprint name"
           :name.sync="sprintToSubmit.name"
         />
@@ -25,7 +24,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import addEditSprintMixin from "src/mixins/mixin-add-edit-sprint.js";
+import addEditSprintMixin from "src/mixins/mixin-add-edit-model.js";
 
 export default {
   mixins: [addEditSprintMixin],
@@ -34,20 +33,13 @@ export default {
       sprintToSubmit: {
         name: "",
         dueDate: "",
-        dueTime: "",
-        completed: false
+        dueTime: ""
       }
     };
   },
   methods: {
     ...mapActions("sprints", ["addSprint"]),
-    submitForm() {
-      this.$refs.modalSprintName.$refs.sprintName.validate();
-      if (!this.$refs.modalSprintName.$refs.sprintName.hasError) {
-        this.submitSprint();
-      }
-    },
-    submitSprint() {
+    submitModel() {
       this.addSprint(this.sprintToSubmit);
       this.$emit("close");
     },

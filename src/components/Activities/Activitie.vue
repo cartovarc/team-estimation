@@ -3,9 +3,13 @@
     v-ripple
     v-touch-hold:1000.mouse="showEditActivitieModal"
     @click="
-      updateActivitie({ id: id, updates: { completed: !activitie.completed } })
+      updateActivitie({
+        activitieId: activitieId,
+        sprintId: sprintId,
+        updates: { completed: !activitie.completed }
+      })
     "
-    :class="activitie.completed ? 'bg-green-1' : 'bg-orange-1'"
+    :class="activitie.completed ? 'bg-green-2' : 'bg-amber-2'"
     clickable
   >
     <q-item-section side top>
@@ -13,10 +17,8 @@
     </q-item-section>
 
     <q-item-section>
-      <q-item-label
-        :class="{ 'text-strikethrough': activitie.completed }"
-        v-html="$options.filters.searchHighLight(activitie.name, search)"
-      >
+      <q-item-label :class="{ 'text-strikethrough': activitie.completed }">
+        {{ activitie.name }}
       </q-item-label>
     </q-item-section>
 
@@ -49,7 +51,7 @@
           icon="edit"
         />
         <q-btn
-          @click.stop="promptToDelete(id)"
+          @click.stop="promptToDelete()"
           flat
           round
           dense
@@ -63,7 +65,8 @@
       <edit-activitie
         @close="showEditActivitie = false"
         :activitie="activitie"
-        :id="id"
+        :activitieId="activitieId"
+        :sprintId="sprintId"
       />
     </q-dialog>
   </q-item>
@@ -75,15 +78,13 @@ import { date } from "quasar";
 const { formatDate } = date;
 
 export default {
-  props: ["activitie", "id"],
+  props: ["activitie", "activitieId", "sprintId"],
   data() {
     return {
       showEditActivitie: false
     };
   },
   computed: {
-    ...mapState("activities", ["search"]),
-    ...mapGetters("settings", ["settings"]),
     activitieDueTime() {
       if (this.settings.show12HourTimeFormat) {
         return date.formatDate(
@@ -95,8 +96,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions("activities", ["updateActivitie", "deleteActivitie"]),
-    promptToDelete(id) {
+    ...mapActions("sprints", ["updateActivitie", "deleteActivitie"]),
+    promptToDelete() {
       this.$q
         .dialog({
           title: "Confirm",
@@ -105,7 +106,7 @@ export default {
           persistent: true
         })
         .onOk(() => {
-          this.deleteActivitie(id);
+          this.deleteActivitie(this.activitieId, this.sprintId);
         });
     },
     showEditActivitieModal() {
@@ -115,20 +116,11 @@ export default {
   filters: {
     niceDate(value) {
       return date.formatDate(value, "ddd, D MMM YYYY");
-    },
-    searchHighLight(value, search) {
-      if (search) {
-        let searchRegExp = new RegExp(search, "ig"); // insensitive global
-        return value.replace(searchRegExp, match => {
-          return '<span class="bg-yellow-6">' + match + "</span>";
-        });
-      }
-      return value;
     }
   },
   components: {
-    //"edit-activitie": require("components/Activities/Modals/EditActivitie.vue")
-    //   .default
+    "edit-activitie": require("components/Activities/Modals/EditActivitie.vue")
+      .default
   }
 };
 </script>

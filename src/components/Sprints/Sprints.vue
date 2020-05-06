@@ -1,12 +1,18 @@
 <template>
   <div>
     <div class="q-mb-md" v-for="(sprint, key) in sprints" :key="key">
-      <list-header :bgColor="'bg-orange-4'">
+      <list-header :bgColor="'bg-primary'">
         <sprint class="q-ma-none q-pa-none" :sprint="sprint" :id="key">
         </sprint>
       </list-header>
       <q-list bordered separated>
-        <activitie />
+        <activitie
+          v-for="(activitie, key2) in sprint.activities"
+          v-bind:key="activitie.id"
+          :activitie="activitie"
+          :sprintId="key"
+          :activitieId="key2"
+        />
       </q-list>
     </div>
   </div>
