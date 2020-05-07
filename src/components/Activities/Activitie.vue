@@ -4,6 +4,7 @@
     v-touch-hold:1000.mouse="showEditActivityModal"
     @click="
       updateActivity({
+        sprintId: activity.sprint,
         id: activityId,
         updates: { completed: !activity.completed }
       })

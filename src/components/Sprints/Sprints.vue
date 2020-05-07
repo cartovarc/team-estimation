@@ -6,12 +6,11 @@
         </sprint>
       </list-header>
       <q-list v-if="activitiesDownloaded" bordered separated>
-        <div v-for="(activity, key2) in activities" v-bind:key="activity.id">
-          <activitie
-            v-if="activity.sprint == key"
-            :activity="activity"
-            :activityId="key2"
-          />
+        <div
+          v-for="(activity, key2) in activities[key]"
+          v-bind:key="activity.id"
+        >
+          <activitie :activity="activity" :activityId="key2" />
         </div>
       </q-list>
     </div>

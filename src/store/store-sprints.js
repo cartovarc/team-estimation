@@ -50,7 +50,7 @@ const actions = {
     commit("setSprintsDownloaded", value);
   },
 
-  fbReadData({ commit, getters }) {
+  fbReadData({ commit, dispatch }) {
     let enterpriseSprints = firebaseDb.ref("sprints/" + enterpriseId);
 
     // check initial data
@@ -73,6 +73,7 @@ const actions = {
         sprint: sprint
       };
       commit("addSprint", payload);
+      dispatch("activities/fbReadData", snapshot.key, { root: true });
     });
 
     // child changed

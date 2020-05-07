@@ -46,7 +46,6 @@ const actions = {
         LocalStorage.set("loggedIn", true);
         this.$router.push("/").catch(err => {});
         dispatch("sprints/fbReadData", null, { root: true });
-        dispatch("activities/fbReadData", null, { root: true });
       } else {
         commit("sprints/clearSprints", null, { root: true });
         commit("sprints/setSprintsDownloaded", false, { root: true });

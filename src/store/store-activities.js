@@ -12,13 +12,23 @@ const state = {
 
 const mutations = {
   updateActivity(state, payload) {
-    Object.assign(state.activities[payload.id], payload.updates);
+    Object.assign(
+      state.activities[payload.sprintId][payload.id],
+      payload.updates
+    );
   },
-  deleteActivity(state, id) {
-    Vue.delete(state.activities, id);
+  deleteActivity(state, ids) {
+    Vue.delete(state.activities[ids.sprintId], ids.id);
   },
   addActivitie(state, payload) {
-    Vue.set(state.activities, payload.id, payload.activitie);
+    if (!state.activities[payload.activitie.sprint]) {
+      Vue.set(state.activities, payload.activitie.sprint, {});
+    }
+    Vue.set(
+      state.activities[payload.activitie.sprint],
+      payload.id,
+      payload.activitie
+    );
   },
   clearActivities(state) {
     state.activities = {};
@@ -54,8 +64,11 @@ const actions = {
     commit("setActivitiesDownloaded", value);
   },
 
-  fbReadData({ commit, getters }) {
-    let enterpriseActivities = firebaseDb.ref("activities/" + enterpriseId);
+  fbReadData({ commit }, sprintId) {
+    let enterpriseActivities = firebaseDb
+      .ref("activities/" + enterpriseId)
+      .orderByChild("sprint")
+      .equalTo(sprintId);
 
     // check initial data
     enterpriseActivities.once(
@@ -84,6 +97,7 @@ const actions = {
       let activitie = snapshot.val();
       let payload = {
         id: snapshot.key,
+        sprintId: activitie.sprint,
         updates: activitie
       };
       commit("updateActivity", payload);
@@ -92,7 +106,8 @@ const actions = {
     // child removed
     enterpriseActivities.on("child_removed", snapshot => {
       let activitieId = snapshot.key;
-      commit("deleteActivity", activitieId);
+      let activity = snapshot.val();
+      commit("deleteActivity", { id: activitieId, sprintId: activity.sprint });
     });
   },
 
