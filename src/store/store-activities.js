@@ -33,6 +33,10 @@ const actions = {
     dispatch("fbUpdateActivity", payload);
   },
 
+  updateEstimation({ dispatch }, payload) {
+    dispatch("fbUpdateEstimation", payload);
+  },
+
   deleteActivity({ dispatch }, id) {
     dispatch("fbDeleteActivity", id);
   },
@@ -114,6 +118,24 @@ const actions = {
         showErrorMessage(error.message);
       } else {
         Notify.create("Activity updated");
+      }
+    });
+  },
+
+  fbUpdateEstimation({}, payload) {
+    let estimationRef = firebaseDb.ref(
+      "activities/" +
+        enterpriseId +
+        "/" +
+        payload.id +
+        "/estimations/" +
+        payload.uid
+    );
+    estimationRef.update(payload.updates, error => {
+      if (error) {
+        showErrorMessage(error.message);
+      } else {
+        Notify.create("Estimation updated");
       }
     });
   },

@@ -37,3 +37,6 @@ yarn-error.log*
 credentials
 yarn.lock
 package-lock.json
+.firebase
+.firebaserc
+firebase.json

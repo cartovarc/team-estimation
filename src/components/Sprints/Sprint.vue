@@ -128,7 +128,7 @@ export default {
   },
   components: {
     "edit-sprint": require("components/Sprints/Modals/EditSprint.vue").default,
-    "add-activitie": require("components/Activities/Modals/AddActivitie.vue")
+    "add-activitie": require("components/Activities/Modals/AddActivity.vue")
       .default
   }
 };

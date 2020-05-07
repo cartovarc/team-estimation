@@ -1,14 +1,14 @@
 <template>
   <q-item
     v-ripple
-    v-touch-hold:1000.mouse="showEditActivitieModal"
+    v-touch-hold:1000.mouse="showEditActivityModal"
     @click="
       updateActivity({
         id: activityId,
         updates: { completed: !activity.completed }
       })
     "
-    :class="activity.completed ? 'bg-green-2' : 'bg-amber-2'"
+    :class="getColor()"
     clickable
   >
     <q-item-section side top>
@@ -42,7 +42,15 @@
     <q-item-section side>
       <div class="row">
         <q-btn
-          @click.stop="showEditActivitieModal"
+          @click.stop="showEstimateModal"
+          flat
+          round
+          dense
+          color="orange-6"
+          icon="schedule"
+        />
+        <q-btn
+          @click.stop="showEditActivityModal"
           flat
           round
           dense
@@ -60,9 +68,17 @@
       </div>
     </q-item-section>
 
-    <q-dialog v-model="showEditActivitie">
+    <q-dialog v-model="showEditActivity">
       <edit-activity
-        @close="showEditActivitie = false"
+        @close="showEditActivity = false"
+        :activity="activity"
+        :activityId="activityId"
+      />
+    </q-dialog>
+
+    <q-dialog v-model="showEstimateActivity">
+      <estimate-activity
+        @close="showEstimateActivity = false"
         :activity="activity"
         :activityId="activityId"
       />
@@ -72,6 +88,7 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
+import { firebaseAuth } from "boot/firebase";
 import { date } from "quasar";
 const { formatDate } = date;
 
@@ -79,7 +96,8 @@ export default {
   props: ["activity", "activityId"],
   data() {
     return {
-      showEditActivitie: false
+      showEditActivity: false,
+      showEstimateActivity: false
     };
   },
   computed: {
@@ -107,8 +125,23 @@ export default {
           this.deleteActivity(this.activityId);
         });
     },
-    showEditActivitieModal() {
-      this.showEditActivitie = true;
+    showEditActivityModal() {
+      this.showEditActivity = true;
+    },
+    showEstimateModal() {
+      this.showEstimateActivity = true;
+    },
+    getColor() {
+      let uid = firebaseAuth.currentUser.uid;
+      let estimated =
+        this.activity.estimations && this.activity.estimations[uid];
+      if (!this.activity.completed && !estimated) {
+        return "bg-red-2";
+      } else if (!this.activity.completed || !estimated) {
+        return "bg-amber-2";
+      } else {
+        return "bg-green-2";
+      }
     }
   },
   filters: {
@@ -117,7 +150,9 @@ export default {
     }
   },
   components: {
-    "edit-activity": require("components/Activities/Modals/EditActivitie.vue")
+    "edit-activity": require("components/Activities/Modals/EditActivity.vue")
+      .default,
+    "estimate-activity": require("components/Activities/Modals/EstimateActivity.vue")
       .default
   }
 };
