@@ -20,7 +20,7 @@ const mutations = {
   deleteActivity(state, ids) {
     Vue.delete(state.activities[ids.sprintId], ids.id);
   },
-  addActivitie(state, payload) {
+  addActivity(state, payload) {
     if (!state.activities[payload.activitie.sprint]) {
       Vue.set(state.activities, payload.activitie.sprint, {});
     }
@@ -65,13 +65,13 @@ const actions = {
   },
 
   fbReadData({ commit }, sprintId) {
-    let enterpriseActivities = firebaseDb
+    let sprintActivities = firebaseDb
       .ref("activities/" + enterpriseId)
       .orderByChild("sprint")
       .equalTo(sprintId);
 
     // check initial data
-    enterpriseActivities.once(
+    sprintActivities.once(
       "value",
       snapshot => {
         commit("setActivitiesDownloaded", true);
@@ -83,28 +83,28 @@ const actions = {
     );
 
     // child added
-    enterpriseActivities.on("child_added", snapshot => {
-      let activitie = snapshot.val();
+    sprintActivities.on("child_added", snapshot => {
+      let activity = snapshot.val();
       let payload = {
         id: snapshot.key,
-        activitie: activitie
+        activitie: activity
       };
-      commit("addActivitie", payload);
+      commit("addActivity", payload);
     });
 
     // child changed
-    enterpriseActivities.on("child_changed", snapshot => {
-      let activitie = snapshot.val();
+    sprintActivities.on("child_changed", snapshot => {
+      let activity = snapshot.val();
       let payload = {
         id: snapshot.key,
-        sprintId: activitie.sprint,
-        updates: activitie
+        sprintId: activity.sprint,
+        updates: activity
       };
       commit("updateActivity", payload);
     });
 
     // child removed
-    enterpriseActivities.on("child_removed", snapshot => {
+    sprintActivities.on("child_removed", snapshot => {
       let activitieId = snapshot.key;
       let activity = snapshot.val();
       commit("deleteActivity", { id: activitieId, sprintId: activity.sprint });
@@ -146,10 +146,20 @@ const actions = {
         "/estimations/" +
         payload.uid
     );
+
     estimationRef.update(payload.updates, error => {
       if (error) {
         showErrorMessage(error.message);
       } else {
+        // TODO: fix bug, needed for reactive in estimations pages
+        let activityRef = firebaseDb.ref(
+          "activities/" + enterpriseId + "/" + payload.id
+        );
+        activityRef.update({ lastChanged: Date.now() }, error => {
+          if (error) {
+            showErrorMessage(error.message);
+          }
+        });
         Notify.create("Estimation updated");
       }
     });

@@ -25,7 +25,8 @@ export default {
     return {
       activityToSubmit: {
         name: "",
-        completed: false
+        completed: false,
+        lastChanged: false
       }
     };
   },
@@ -33,6 +34,8 @@ export default {
     ...mapActions("activities", ["addActivity"]),
     submitModel() {
       this.activityToSubmit["sprint"] = this.sprintId;
+      this.activityToSubmit["lastChanged"] = Date.now();
+
       this.addActivity({
         activity: this.activityToSubmit,
         sprintId: this.sprintId

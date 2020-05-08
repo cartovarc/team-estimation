@@ -1,5 +1,6 @@
 <template>
   <div class="q-pa-md">
+    ASDASD
     <q-table title="Treats" :data="tableData" :columns="columns" row-key="name">
       <template v-slot:top>
         <q-select
@@ -28,7 +29,7 @@
               </td>
               <td class="text-right">
                 <q-badge class="text-weight-bold" color="purple">
-                  0
+                  {{ summary.averageSprintEffort }}
                 </q-badge>
               </td>
             </tr>
@@ -38,7 +39,7 @@
               </td>
               <td class="text-right">
                 <q-badge class="text-weight-bold" color="purple">
-                  0
+                  {{ summary.totalEstimatedHours }}
                 </q-badge>
               </td>
             </tr>
@@ -48,7 +49,7 @@
               </td>
               <td class="text-right">
                 <q-badge class="text-weight-bold" color="purple">
-                  0
+                  {{ summary.totalEstimatedHoursWithUnforeseen }}
                 </q-badge>
               </td>
             </tr>
@@ -59,6 +60,9 @@
         <q-td :props="props">
           <div class="my-table-details">
             {{ props.row.name }}
+            <!---
+            Fix bug
+            {{ props.row.lastChanged }} -->
           </div>
         </q-td>
       </template>
@@ -106,6 +110,7 @@ export default {
     sprintActivities() {
       try {
         let activities = Object.values(this.activities[this.model.value]);
+        console.log(activities);
         return activities;
       } catch (error) {
         // waiting to load data
@@ -122,7 +127,7 @@ export default {
       }
     },
     tableData() {
-      return this.sprintActivities.map(function(activity) {
+      let reformedActivities = this.sprintActivities.map(function(activity) {
         let effort = 0;
         let eh = 0;
         let ehu = 0;
@@ -148,12 +153,47 @@ export default {
         }
         let reformedActivity = {
           name: activity.name,
+          lastChanged: activity.lastChanged,
           effort: effort,
           eh: eh,
           ehu: ehu
         };
         return reformedActivity;
       });
+
+      return reformedActivities;
+    },
+    summary() {
+      let totalEstimatedHours = 0;
+      let totalEstimatedHoursWithUnforeseen = 0;
+      let averageSprintEffort = 0;
+      let totalEfforts = 0;
+
+      this.tableData.forEach(function(reformedActivity) {
+        if (reformedActivity.eh != "...") {
+          totalEstimatedHours += reformedActivity.eh;
+        }
+        if (reformedActivity.ehu != "...") {
+          totalEstimatedHoursWithUnforeseen += reformedActivity.ehu;
+        }
+
+        if (reformedActivity.effort != "...") {
+          averageSprintEffort += reformedActivity.effort;
+          totalEfforts += 1;
+        }
+      });
+
+      if (totalEfforts != 0) {
+        averageSprintEffort /= totalEfforts;
+      } else {
+        averageSprintEffort = "...";
+      }
+
+      return {
+        totalEstimatedHours: totalEstimatedHours,
+        totalEstimatedHoursWithUnforeseen: totalEstimatedHoursWithUnforeseen,
+        averageSprintEffort: averageSprintEffort
+      };
     }
   },
   data() {
