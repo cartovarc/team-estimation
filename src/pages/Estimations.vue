@@ -1,6 +1,5 @@
 <template>
   <div class="q-pa-md">
-    ASDASD
     <q-table title="Treats" :data="tableData" :columns="columns" row-key="name">
       <template v-slot:top>
         <q-select
@@ -56,38 +55,50 @@
           </tbody>
         </q-markup-table>
       </template>
-      <template v-slot:body-cell-name="props">
-        <q-td :props="props">
-          <div class="my-table-details">
-            {{ props.row.name }}
-            <!---
-            Fix bug
-            {{ props.row.lastChanged }} -->
-          </div>
-        </q-td>
+
+      <template v-slot:header="props">
+        <q-tr :props="props">
+          <q-th auto-width />
+          <q-th v-for="col in props.cols" :key="col.name" :props="props">
+            {{ col.label }}
+          </q-th>
+        </q-tr>
       </template>
 
-      <template v-slot:body-cell-effort="props">
-        <q-td :props="props">
-          <q-badge class="text-weight-bold" color="blue">
-            {{ props.row.effort }}
-          </q-badge>
-        </q-td>
-      </template>
-      <template v-slot:body-cell-eh="props">
-        <q-td :props="props">
-          <q-badge class="text-weight-bold" color="green">
-            {{ props.row.eh }}
-          </q-badge>
-        </q-td>
-      </template>
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td auto-width>
+            <q-btn
+              size="sm"
+              color="accent"
+              round
+              dense
+              @click="props.expand = !props.expand"
+              :icon="props.expand ? 'remove' : 'add'"
+            />
+          </q-td>
 
-      <template v-slot:body-cell-ehu="props">
-        <q-td :props="props">
-          <q-badge class="text-weight-bold" color="red">
-            {{ props.row.ehu }}
-          </q-badge>
-        </q-td>
+          <q-td :props="props"> </q-td>
+          <q-td v-for="col in props.cols" :key="col.name" :props="props">
+            <div v-if="col.name == 'name'" class="my-table-details">
+              {{ props.row.name }}
+            </div>
+            <q-badge
+              v-else
+              class="text-weight-bold"
+              :color="getBadgeColor(col.name)"
+            >
+              {{ props.row[col.name] }}
+            </q-badge>
+          </q-td>
+        </q-tr>
+        <q-tr v-show="props.expand" :props="props">
+          <q-td colspan="100%">
+            <div class="text-left">
+              This is expand slot for row above: {{ props.row.name }}.
+            </div>
+          </q-td>
+        </q-tr>
       </template>
     </q-table>
   </div>
@@ -110,7 +121,6 @@ export default {
     sprintActivities() {
       try {
         let activities = Object.values(this.activities[this.model.value]);
-        console.log(activities);
         return activities;
       } catch (error) {
         // waiting to load data
@@ -132,6 +142,7 @@ export default {
         let eh = 0;
         let ehu = 0;
         let estimationsCounter = 0;
+        let total = 0;
         if (activity.estimations) {
           Object.keys(activity.estimations)
             .map(function(uid) {
@@ -150,10 +161,12 @@ export default {
           effort = "...";
           eh = "...";
           ehu = "...";
+          total = 0;
         }
         let reformedActivity = {
           name: activity.name,
           lastChanged: activity.lastChanged,
+          total: estimationsCounter,
           effort: effort,
           eh: eh,
           ehu: ehu
@@ -205,6 +218,7 @@ export default {
           label: "Acvitivy",
           align: "left"
         },
+        { name: "total", label: "Total" },
         { name: "effort", label: "Effort" },
         { name: "eh", label: "EH" },
         { name: "ehu", label: "EH (U)" }
@@ -212,7 +226,18 @@ export default {
     };
   },
   methods: {
-    ...mapGetters("sprints", ["firstSprint"])
+    ...mapGetters("sprints", ["firstSprint"]),
+    getBadgeColor(colName) {
+      if (colName == "total") {
+        return "black";
+      } else if (colName == "effort") {
+        return "blue";
+      } else if (colName == "eh") {
+        return "green";
+      } else if (colName == "ehu") {
+        return "red";
+      }
+    }
   },
   mounted() {
     this.model = this.firstSprint();
