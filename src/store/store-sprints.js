@@ -134,6 +134,17 @@ const actions = {
 const getters = {
   sprints: state => {
     return state.sprints;
+  },
+  firstSprint: state => {
+    try {
+      let res = {
+        value: Object.keys(state.sprints)[0],
+        label: Object.values(state.sprints)[0].name
+      };
+      return res;
+    } catch (error) {
+      return { label: "retrieving data", value: null };
+    }
   }
 };
 

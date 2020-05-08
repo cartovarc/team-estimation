@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex";
+import { mapActions, mapState } from "vuex";
 import { firebaseAuth } from "boot/firebase";
 import { date } from "quasar";
 const { formatDate } = date;

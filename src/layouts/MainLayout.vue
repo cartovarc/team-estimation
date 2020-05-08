@@ -86,11 +86,17 @@ export default {
           to: "/"
         },
         {
-          title: "Settings",
-          caption: "Configurations and parameters",
-          icon: "settings",
-          to: "/settings"
+          title: "Estimations",
+          caption: "See estimations from all users",
+          icon: "description",
+          to: "/estimations"
         }
+        //{
+        //  title: "Settings",
+        //  caption: "Configurations and parameters",
+        //  icon: "settings",
+        //   to: "/settings"
+        // }
       ]
     };
   },

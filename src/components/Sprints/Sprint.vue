@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex";
+import { mapActions, mapState } from "vuex";
 import { date } from "quasar";
 const { formatDate } = date;
 
@@ -83,8 +83,7 @@ export default {
     };
   },
   computed: {
-    ...mapState("sprints", ["search"]),
-    ...mapGetters("settings", ["settings"])
+    ...mapState("sprints", ["search"])
   },
   methods: {
     ...mapActions("sprints", ["updateSprint", "deleteSprint"]),
