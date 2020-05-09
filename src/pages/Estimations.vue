@@ -70,7 +70,7 @@
           <q-td auto-width>
             <q-btn
               size="sm"
-              color="accent"
+              color="grey-7"
               round
               dense
               @click="props.expand = !props.expand"
@@ -94,9 +94,52 @@
         </q-tr>
         <q-tr v-show="props.expand" :props="props">
           <q-td colspan="100%">
-            <div class="text-left">
-              This is expand slot for row above: {{ props.row.name }}.
-            </div>
+            <q-list bordered class="rounded-borders">
+              <q-item
+                v-for="userEstimation in props.row.usersEstimations"
+                v-bind:key="userEstimation.uid"
+              >
+                <q-item-section avatar>
+                  <q-avatar>
+                    <img
+                      src="https://simpleicon.com/wp-content/uploads/user1.png"
+                    />
+                  </q-avatar>
+                </q-item-section>
+
+                <q-item-section>
+                  <q-item-label lines="1">{{
+                    userEstimation.uid
+                  }}</q-item-label>
+                  <q-item-label caption lines="2">
+                    <span class="text-weight-bold">Effort: </span>
+                    <q-badge class="text-weight-bold" color="blue">
+                      {{ userEstimation.effort }}
+                    </q-badge>
+                  </q-item-label>
+
+                  <q-item-label caption lines="2">
+                    <span class="text-weight-bold">Estimated hours: </span>
+                    <q-badge class="text-weight-bold" color="green">
+                      {{ userEstimation.eh }}
+                    </q-badge>
+                  </q-item-label>
+
+                  <q-item-label caption lines="2">
+                    <span class="text-weight-bold"
+                      >Estimated hours (Unforeseen):
+                    </span>
+                    <q-badge class="text-weight-bold" color="red">
+                      {{ userEstimation.ehu }}
+                    </q-badge>
+                  </q-item-label>
+                </q-item-section>
+
+                <q-item-section side top>
+                  # 1
+                </q-item-section>
+              </q-item>
+            </q-list>
           </q-td>
         </q-tr>
       </template>
@@ -143,15 +186,27 @@ export default {
         let ehu = 0;
         let estimationsCounter = 0;
         let total = 0;
+        let usersEstimations = [];
         if (activity.estimations) {
           Object.keys(activity.estimations)
             .map(function(uid) {
-              return activity.estimations[uid];
+              return { estimation: activity.estimations[uid], uid: uid };
             })
-            .forEach(function(estimation) {
-              effort += parseInt(estimation["effort"]);
-              eh += parseInt(estimation["estimatedHours"]);
-              ehu += parseInt(estimation["estimatedHoursWithUnforeseen"]);
+            .forEach(function(payload) {
+              let userEstimation = {
+                uid: payload.uid,
+                effort: payload.estimation["effort"],
+                eh: payload.estimation["estimatedHours"],
+                ehu: payload.estimation["estimatedHoursWithUnforeseen"]
+              };
+
+              usersEstimations.push(userEstimation);
+
+              effort += parseInt(payload.estimation["effort"]);
+              eh += parseInt(payload.estimation["estimatedHours"]);
+              ehu += parseInt(
+                payload.estimation["estimatedHoursWithUnforeseen"]
+              );
               estimationsCounter += 1;
             });
           effort /= estimationsCounter;
@@ -167,6 +222,7 @@ export default {
           name: activity.name,
           lastChanged: activity.lastChanged,
           total: estimationsCounter,
+          usersEstimations: usersEstimations,
           effort: effort,
           eh: eh,
           ehu: ehu
