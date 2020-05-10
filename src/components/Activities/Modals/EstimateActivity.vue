@@ -3,12 +3,23 @@
     <modal-header>Estimate activity</modal-header>
     <q-form @submit="submitForm()">
       <q-card-section class="q-pt-none">
-        <modal-number
-          :autofocus="true"
-          ref="modalEffort"
-          label="Effort (1 to 10)"
-          :number.sync="estimationToSubmit.effort"
-        />
+        <div class="q-mb-sm">
+          <q-input
+            autofocus
+            v-model="estimationToSubmit.effort"
+            outlined
+            :rules="[
+              val => !!val || 'Field is required',
+              val => val <= 10 || 'Maximum 10 allowed'
+            ]"
+            clearable
+            clear-icon="close"
+            ref="modalEffort"
+            label="Effort (1 to 10)"
+            type="number"
+            style="max-width: 200px"
+          />
+        </div>
         <div class="q-mb-sm">
           <q-input
             v-model="estimationToSubmit.estimatedHours"
@@ -62,12 +73,12 @@ export default {
   methods: {
     ...mapActions("activities", ["updateEstimation"]),
     submitForm() {
-      this.$refs.modalEffort.$refs.number.validate();
+      this.$refs.modalEffort.validate();
       this.$refs.modalEstimatedHours.validate();
       this.$refs.estimatedHoursWithUnforeseen.validate();
 
       if (
-        !this.$refs.modalEffort.$refs.number.hasError &&
+        !this.$refs.modalEffort.hasError &&
         !this.$refs.modalEstimatedHours.hasError &&
         !this.$refs.estimatedHoursWithUnforeseen.hasError
       ) {
@@ -83,9 +94,6 @@ export default {
       });
       this.$emit("close");
     }
-  },
-  components: {
-    "modal-number": require("components/Shared/Modals/ModalNumber.vue").default
   },
   mounted() {
     let uid = firebaseAuth.currentUser.uid;
