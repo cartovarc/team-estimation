@@ -2,13 +2,7 @@
   <q-item
     v-ripple
     v-touch-hold:1000.mouse="showEditActivityModal"
-    @click="
-      updateActivity({
-        sprintId: activity.sprint,
-        id: activityId,
-        updates: { completed: !activity.completed }
-      })
-    "
+    @click="showReportRealTimeModal"
     :class="getColor()"
     clickable
   >
@@ -84,6 +78,22 @@
         :activityId="activityId"
       />
     </q-dialog>
+
+    <q-dialog v-model="showReportRealTime">
+      <real-time
+        @close="showReportRealTime = false"
+        :activity="activity"
+        :activityId="activityId"
+      />
+    </q-dialog>
+
+    <q-dialog v-model="showUncompleted">
+      <uncompleted
+        @close="showUncompleted = false"
+        :activity="activity"
+        :activityId="activityId"
+      />
+    </q-dialog>
   </q-item>
 </template>
 
@@ -98,7 +108,9 @@ export default {
   data() {
     return {
       showEditActivity: false,
-      showEstimateActivity: false
+      showEstimateActivity: false,
+      showReportRealTime: false,
+      showUncompleted: false
     };
   },
   computed: {
@@ -132,6 +144,13 @@ export default {
     showEstimateModal() {
       this.showEstimateActivity = true;
     },
+    showReportRealTimeModal() {
+      if (this.activity.completed) {
+        this.showUncompleted = true;
+      } else {
+        this.showReportRealTime = true;
+      }
+    },
     getColor() {
       let uid = firebaseAuth.currentUser.uid;
       let estimated =
@@ -154,7 +173,9 @@ export default {
     "edit-activity": require("components/Activities/Modals/EditActivity.vue")
       .default,
     "estimate-activity": require("components/Activities/Modals/EstimateActivity.vue")
-      .default
+      .default,
+    "real-time": require("components/Activities/Modals/RealTime.vue").default,
+    uncompleted: require("components/Activities/Modals/Uncompleted.vue").default
   }
 };
 </script>

@@ -94,6 +94,22 @@
         </q-tr>
         <q-tr v-show="props.expand" :props="props">
           <q-td colspan="100%">
+            <q-banner
+              v-if="props.row.completed"
+              inline-actions
+              class="text-white bg-green"
+            >
+              User
+              <q-badge class="text-weight-bold" color="green-10">
+                {{ props.row.userCompleted }}
+              </q-badge>
+              completed the activity in
+              <q-badge class="text-weight-bold" color="green-10">
+                {{ props.row.realTime }} hours
+              </q-badge>
+            </q-banner>
+            <q-item-label header>User estimations</q-item-label>
+
             <q-list bordered class="rounded-borders">
               <q-item
                 v-for="userEstimation in props.row.usersEstimations"
@@ -220,7 +236,10 @@ export default {
         }
         let reformedActivity = {
           name: activity.name,
+          completed: activity.completed,
           lastChanged: activity.lastChanged,
+          userCompleted: activity.userCompleted,
+          realTime: activity.realTime,
           total: estimationsCounter,
           usersEstimations: usersEstimations,
           effort: effort,
