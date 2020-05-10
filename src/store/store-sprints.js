@@ -1,6 +1,6 @@
 import Vue from "vue";
-import { uid, Notify } from "quasar";
-import { firebaseDb, firebaseAuth } from "boot/firebase";
+import { uid, Notify, date } from "quasar";
+import { firebaseDb } from "boot/firebase";
 import { showErrorMessage } from "src/functions/function-show-error-message";
 
 const enterpriseId = "SERNA";
@@ -133,7 +133,28 @@ const actions = {
 
 const getters = {
   sprints: state => {
-    return state.sprints;
+    let sprintSorted = {},
+      keysOrdered = Object.keys(state.sprints);
+
+    keysOrdered.sort((a, b) => {
+      let sprintAProp = state.sprints[a]["dueDate"];
+      let sprintBProp = state.sprints[b]["dueDate"];
+
+      let date1 = new Date(sprintAProp);
+      let date2 = new Date(sprintBProp);
+      let unit = "days";
+
+      let diff = date.getDateDiff(date2, date1, unit);
+
+      if (diff < 0) return 1;
+      else if (diff > 0) return -1;
+      else return 0;
+    });
+
+    keysOrdered.forEach(key => {
+      sprintSorted[key] = state.sprints[key];
+    });
+    return sprintSorted;
   },
   firstSprint: state => {
     try {
