@@ -29,9 +29,10 @@
       </div>
     </q-item-section>
 
-    <q-item-section style="min-width: 80px" side>
+    <q-item-section style="min-width: 100px" side>
       <div class="row">
         <q-btn
+          class="q-ma-xs"
           @click.stop="showAddActivityModal"
           size="xs"
           round
@@ -40,6 +41,7 @@
           icon="add"
         />
         <q-btn
+          class="q-ma-xs"
           @click.stop="showEditSprintModal"
           size="xs"
           round
@@ -48,6 +50,7 @@
           icon="edit"
         />
         <q-btn
+          class="q-ma-xs"
           @click.stop="promptToDelete(id)"
           size="xs"
           round

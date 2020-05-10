@@ -9,16 +9,37 @@
           label="Effort (1 to 10)"
           :number.sync="estimationToSubmit.effort"
         />
-        <modal-number
-          ref="modalEstimatedHours"
-          label="Estimated hours"
-          :number.sync="estimationToSubmit.estimatedHours"
-        />
-        <modal-number
-          ref="modalUnforeseenEstimatedHours"
-          label="E. H. with Unforeseen"
-          :number.sync="estimationToSubmit.estimatedHoursWithUnforeseen"
-        />
+        <div class="q-mb-sm">
+          <q-input
+            v-model="estimationToSubmit.estimatedHours"
+            outlined
+            :rules="[val => !!val || 'Field is required']"
+            clearable
+            clear-icon="close"
+            ref="modalEstimatedHours"
+            label="Estimated hours"
+            type="number"
+            style="max-width: 200px"
+          />
+        </div>
+        <div class="q-mb-sm">
+          <q-input
+            v-model="estimationToSubmit.estimatedHoursWithUnforeseen"
+            outlined
+            :rules="[
+              val => !!val || 'Field is required',
+              val =>
+                val <= estimationToSubmit.estimatedHours ||
+                'This field must be lower or equal than estimated hours'
+            ]"
+            clearable
+            clear-icon="close"
+            ref="estimatedHoursWithUnforeseen"
+            label="E. H. with Unforeseen"
+            type="number"
+            style="max-width: 200px"
+          />
+        </div>
       </q-card-section>
       <modal-buttons></modal-buttons>
     </q-form>
@@ -42,7 +63,14 @@ export default {
     ...mapActions("activities", ["updateEstimation"]),
     submitForm() {
       this.$refs.modalEffort.$refs.number.validate();
-      if (!this.$refs.modalEffort.$refs.number.hasError) {
+      this.$refs.modalEstimatedHours.validate();
+      this.$refs.estimatedHoursWithUnforeseen.validate();
+
+      if (
+        !this.$refs.modalEffort.$refs.number.hasError &&
+        !this.$refs.modalEstimatedHours.hasError &&
+        !this.$refs.estimatedHoursWithUnforeseen.hasError
+      ) {
         this.submitModel();
       }
     },
