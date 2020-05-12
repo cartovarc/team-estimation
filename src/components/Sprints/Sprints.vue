@@ -1,5 +1,6 @@
 <template>
   <div>
+    <proyect-selector />
     <div class="q-mb-md" v-for="(sprint, key) in sprints" :key="key">
       <list-header :bgColor="'bg-primary'">
         <sprint class="q-ma-none q-pa-none" :sprint="sprint" :id="key">
@@ -27,6 +28,8 @@ export default {
   },
   components: {
     sprint: require("components/Sprints/Sprint.vue").default,
+    "proyect-selector": require("components/Projects/ProjectSelector.vue")
+      .default,
     "list-header": require("components/Shared/ListHeader.vue").default,
     activitie: require("components/Activities/Activitie.vue").default
   }

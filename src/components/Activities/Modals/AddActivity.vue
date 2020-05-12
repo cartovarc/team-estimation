@@ -5,7 +5,7 @@
       <q-card-section class="q-pt-none">
         <modal-model-name
           ref="modalModelName"
-          label="Activitie name"
+          label="Activity name"
           :name.sync="activityToSubmit.name"
         />
       </q-card-section>

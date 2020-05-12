@@ -84,7 +84,7 @@ export default {
       leftDrawerOpen: false,
       navLinks: [
         {
-          title: "Backlog",
+          title: "Estimate",
           caption:
             "Add sprints, add activities, make activities estimations, assign activities as completed and report their real time of completion",
           icon: "event",

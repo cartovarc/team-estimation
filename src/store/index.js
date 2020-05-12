@@ -3,6 +3,7 @@ import Vuex from "vuex";
 
 import sprints from "./store-sprints";
 import activities from "./store-activities";
+import projects from "./store-projects";
 import auth from "./store-auth";
 
 Vue.use(Vuex);
@@ -21,6 +22,7 @@ export default function(/* { ssrContext } */) {
     modules: {
       sprints,
       activities,
+      projects,
       auth
     },
 

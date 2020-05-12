@@ -9,7 +9,6 @@
           class="full-width q-mb-lg"
           :options="sprintsArray"
           label="Sprint"
-          style="min-width: 200px"
         />
 
         <q-markup-table bordered class="full-width q-mb-lg">

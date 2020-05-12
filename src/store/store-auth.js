@@ -50,6 +50,7 @@ const actions = {
         commit("setPhotoURL", user.photoURL);
         LocalStorage.set("loggedIn", true);
         this.$router.push("/").catch(err => {});
+        dispatch("projects/fbReadData", null, { root: true });
         dispatch("sprints/fbReadData", null, { root: true });
         dispatch("fbReadData");
       } else {

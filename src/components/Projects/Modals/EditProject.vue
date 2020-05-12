@@ -1,12 +1,12 @@
 <template>
   <q-card>
-    <modal-header>Edit activity</modal-header>
+    <modal-header>Edit project</modal-header>
     <q-form @submit="submitForm()">
       <q-card-section class="q-pt-none">
         <modal-model-name
           ref="modalModelName"
-          label="Activity name"
-          :name.sync="activityToSubmit.name"
+          label="Project name"
+          :name.sync="projectToSubmit.name"
         />
       </q-card-section>
       <modal-buttons></modal-buttons>
@@ -20,24 +20,24 @@ import addEditActivitieMixin from "src/mixins/mixin-add-edit-model.js";
 
 export default {
   mixins: [addEditActivitieMixin],
-  props: ["activity", "activityId"],
+  props: ["project", "projectId"],
   data() {
     return {
-      activityToSubmit: {}
+      projectToSubmit: {}
     };
   },
   methods: {
-    ...mapActions("activities", ["updateActivity"]),
+    ...mapActions("projects", ["updateProject"]),
     submitModel() {
-      this.updateActivity({
-        id: this.activityId,
-        updates: this.activityToSubmit
+      this.updateProject({
+        id: this.projectId,
+        updates: this.projectToSubmit
       });
-      this.$emit("close");
+      this.$emit("close", this.projectId);
     }
   },
   mounted() {
-    this.activityToSubmit = Object.assign({}, this.activity);
+    this.projectToSubmit = Object.assign({}, this.project);
   }
 };
 </script>
