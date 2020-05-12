@@ -5,74 +5,28 @@
         <template v-slot:avatar>
           <q-icon name="account_circle" color="primary" />
         </template>
-        {{ tab | titleCase }} to access to simple estimation app
+        Login / Register to access to simple estimation app
       </q-banner>
     </div>
     <div class="row q-mb-md">
-      <q-input
-        class="col"
-        v-model="formData.email"
-        outlined
-        label="Email"
-        ref="email"
-        lazy-rules
-        :rules="[
-          val =>
-            isValidEmailAddress(val) || 'Please enter an valid email address'
-        ]"
-      />
-    </div>
-    <div class="row q-mb-md">
-      <q-input
-        class="col"
-        type="password"
-        v-model="formData.password"
-        outlined
-        label="Password"
-        ref="password"
-        lazy-rules
-        :rules="[val => val.length > 6 || 'Please enter at least 6 characters']"
-      />
-    </div>
-    <div class="row q-mb-md">
-      <q-space />
-      <q-btn type="submit" color="primary" :label="tab" />
+      <q-btn class="full-width" type="submit" color="white">
+        <q-avatar>
+          <img style="max-width: 32px" src="statics/google.svg" />
+        </q-avatar>
+        <div class="q-ma-sm text-weight-bold" style="color: grey">
+          Login / Register
+        </div>
+      </q-btn>
     </div>
   </form>
 </template>
 <script>
 import { mapActions } from "vuex";
 export default {
-  props: ["tab"],
-  data() {
-    return {
-      formData: {
-        email: "",
-        password: ""
-      }
-    };
-  },
   methods: {
-    ...mapActions("auth", ["loginUser", "registerUser"]),
-    isValidEmailAddress(email) {
-      var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return re.test(String(email).toLowerCase());
-    },
+    ...mapActions("auth", ["loginUser"]),
     submitForm() {
-      this.$refs.email.validate();
-      this.$refs.password.validate();
-      if (!this.$refs.email.hasError && !this.$refs.password.hasError) {
-        if (this.tab == "login") {
-          this.loginUser(this.formData);
-        } else {
-          this.registerUser(this.formData);
-        }
-      }
-    }
-  },
-  filters: {
-    titleCase(value) {
-      return value.charAt(0).toUpperCase() + value.slice(1);
+      this.loginUser();
     }
   }
 };

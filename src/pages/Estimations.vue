@@ -117,15 +117,13 @@
               >
                 <q-item-section avatar>
                   <q-avatar>
-                    <img
-                      src="https://simpleicon.com/wp-content/uploads/user1.png"
-                    />
+                    <img :src="userEstimation.imageURL" />
                   </q-avatar>
                 </q-item-section>
 
                 <q-item-section>
                   <q-item-label lines="1">{{
-                    userEstimation.uid
+                    userEstimation.name
                   }}</q-item-label>
                   <q-item-label caption lines="2">
                     <span class="text-weight-bold">Effort: </span>
@@ -150,10 +148,6 @@
                     </q-badge>
                   </q-item-label>
                 </q-item-section>
-
-                <q-item-section side top>
-                  # 1
-                </q-item-section>
               </q-item>
             </q-list>
           </q-td>
@@ -170,6 +164,7 @@ export default {
   computed: {
     ...mapState("sprints", ["sprints"]),
     ...mapState("activities", ["activities"]),
+    ...mapState("auth", ["profiles"]),
 
     sprintsArray() {
       let thisAux = this;
@@ -196,6 +191,8 @@ export default {
       }
     },
     tableData() {
+      let profiles = this.profiles;
+
       let reformedActivities = this.sprintActivities.map(function(activity) {
         let effort = 0;
         let eh = 0;
@@ -210,7 +207,8 @@ export default {
             })
             .forEach(function(payload) {
               let userEstimation = {
-                uid: payload.uid,
+                name: profiles[payload.uid].name,
+                imageURL: profiles[payload.uid].imageURL,
                 effort: payload.estimation["effort"],
                 eh: payload.estimation["estimatedHours"],
                 ehu: payload.estimation["estimatedHoursWithUnforeseen"]

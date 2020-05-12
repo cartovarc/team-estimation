@@ -40,8 +40,8 @@
             :rules="[
               val => !!val || 'Field is required',
               val =>
-                val <= estimationToSubmit.estimatedHours ||
-                'This field must be lower or equal than estimated hours'
+                val >= estimationToSubmit.estimatedHours ||
+                'This field must be greater or equal than estimated hours'
             ]"
             clearable
             clear-icon="close"

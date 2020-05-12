@@ -17,10 +17,15 @@
           @click="logout"
           v-else
           class="absolute-right"
-          icon-right="account_circle"
           label="Logout"
           flat
-        />
+        >
+          <q-avatar class="q-ml-sm">
+            <img
+              style="max-width: 32px; max-height: 32px"
+              :src="photoURL"
+            /> </q-avatar
+        ></q-btn>
       </q-toolbar>
     </q-header>
 
@@ -72,7 +77,7 @@ export default {
   },
 
   computed: {
-    ...mapState("auth", ["loggedIn"])
+    ...mapState("auth", ["loggedIn", "photoURL"])
   },
   data() {
     return {
@@ -104,6 +109,9 @@ export default {
     ...mapActions("auth", ["logoutUser"]),
     logout() {
       this.logoutUser();
+    },
+    mounted() {
+      console.log(this.photoURL);
     }
   }
 };
