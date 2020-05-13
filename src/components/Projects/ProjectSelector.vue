@@ -2,7 +2,7 @@
   <q-select
     ref="projectSelector"
     outlined
-    v-model="model"
+    v-model="selectedProject"
     class="full-width q-mb-md"
     bg-color="white"
     :options="projectsArray"
@@ -43,8 +43,8 @@
     </q-dialog>
     <q-dialog v-model="showEditProject">
       <edit-project
-        :project="selectedProject"
-        :projectId="selectedProjectId"
+        :project="projects[globalSelectedProject.value]"
+        :projectId="globalSelectedProject.value"
         @close="handleEditClose"
       />
     </q-dialog>
@@ -57,9 +57,9 @@ import { mapGetters, mapState, mapActions } from "vuex";
 export default {
   computed: {
     ...mapGetters("projects", ["getProject"]),
-    ...mapState("projects", ["projects"]),
+    ...mapState("projects", ["projects", "globalSelectedProject"]),
     emptyProjects() {
-      return !this.model.value;
+      return !this.globalSelectedProject.value;
     },
     projectsArray() {
       let thisAux = this;
@@ -67,30 +67,34 @@ export default {
         return { label: thisAux.projects[projectId].name, value: projectId };
       });
     },
-    selectedProject() {
-      return this.projects[this.model.value];
+    selectedProject: {
+      get() {
+        return this.globalSelectedProject;
+      },
+      set(value) {
+        this.setSelectedProject(value);
+      }
     },
     selectedProjectId() {
-      return this.model.value;
+      return this.globalSelectedProject.value;
     }
   },
   data() {
     return {
-      model: { label: "", value: "" },
       showAddProject: false,
       showEditProject: false
     };
   },
   methods: {
-    ...mapActions("projects", ["deleteProject"]),
+    ...mapActions("projects", ["deleteProject", "setSelectedProject"]),
     ...mapGetters("projects", ["firstProject"]),
     handleEditClose(projectId) {
       this.showEditProject = false;
-      this.model = this.getProject(projectId);
+      this.setSelectedProject(this.getProject(projectId));
     },
     handleAddClose() {
       this.showAddProject = false;
-      this.model = this.firstProject();
+      this.setSelectedProject(this.firstProject());
     },
     promptToDelete() {
       this.$q
@@ -102,7 +106,7 @@ export default {
         })
         .onOk(() => {
           this.deleteProject(this.selectedProjectId);
-          this.model = this.firstProject();
+          this.setSelectedProject(this.firstProject());
         });
     }
   },
@@ -112,7 +116,7 @@ export default {
       .default
   },
   mounted() {
-    this.model = this.firstProject();
+    this.setSelectedProject(this.firstProject());
   }
 };
 </script>

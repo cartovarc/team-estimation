@@ -7,6 +7,7 @@ const enterpriseId = "SERNA";
 
 const state = {
   projects: {},
+  globalSelectedProject: {},
   projectsDownloaded: false
 };
 
@@ -25,6 +26,9 @@ const mutations = {
   },
   setProjectsDownloaded(state, value) {
     state.projectsDownloaded = value;
+  },
+  setSelectedSelectedProject(state, value) {
+    state.globalSelectedProject = value;
   }
 };
 
@@ -48,6 +52,10 @@ const actions = {
 
   setProjectsDownloaded({ commit }, value) {
     commit("setProjectsDownloaded", value);
+  },
+
+  setSelectedProject({ commit }, value) {
+    commit("setSelectedSelectedProject", value);
   },
 
   fbReadData({ commit }, enterpriseIdUseless) {

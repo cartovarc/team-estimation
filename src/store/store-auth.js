@@ -63,7 +63,6 @@ const actions = {
     });
   },
   fbNewUser({}, payload) {
-    console.log(payload);
     let uid = payload.user.uid;
     let imageUrlRef = firebaseDb.ref(
       "profiles/" + enterpriseId + "/" + uid + "/"
