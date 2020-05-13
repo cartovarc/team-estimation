@@ -3,7 +3,7 @@
     <q-header elevated>
       <q-toolbar>
         <q-toolbar-title :class="{ 'absolute-center': $q.screen.gt.xs }">
-          Simple Estimation
+          Estimation
         </q-toolbar-title>
         <q-btn
           v-if="!loggedIn"

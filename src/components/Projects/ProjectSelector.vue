@@ -20,6 +20,7 @@
         />
         <q-btn
           @click.stop="showEditProject = true"
+          v-if="!emptyProjects"
           size="sm"
           dense
           flat
@@ -27,6 +28,7 @@
           icon="edit"
         />
         <q-btn
+          v-if="!emptyProjects"
           @click.stop="promptToDelete()"
           size="sm"
           flat
@@ -37,13 +39,13 @@
       </div>
     </template>
     <q-dialog v-model="showAddProject">
-      <add-project @close="showAddProject = false" />
+      <add-project @close="handleAddClose" />
     </q-dialog>
     <q-dialog v-model="showEditProject">
       <edit-project
         :project="selectedProject"
         :projectId="selectedProjectId"
-        @close="handleClose"
+        @close="handleEditClose"
       />
     </q-dialog>
   </q-select>
@@ -56,6 +58,9 @@ export default {
   computed: {
     ...mapGetters("projects", ["getProject"]),
     ...mapState("projects", ["projects"]),
+    emptyProjects() {
+      return !this.model.value;
+    },
     projectsArray() {
       let thisAux = this;
       return Object.keys(this.projects).map(function(projectId) {
@@ -71,7 +76,7 @@ export default {
   },
   data() {
     return {
-      model: null,
+      model: { label: "", value: "" },
       showAddProject: false,
       showEditProject: false
     };
@@ -79,9 +84,13 @@ export default {
   methods: {
     ...mapActions("projects", ["deleteProject"]),
     ...mapGetters("projects", ["firstProject"]),
-    handleClose(projectId) {
+    handleEditClose(projectId) {
       this.showEditProject = false;
       this.model = this.getProject(projectId);
+    },
+    handleAddClose() {
+      this.showAddProject = false;
+      this.model = this.firstProject();
     },
     promptToDelete() {
       this.$q
