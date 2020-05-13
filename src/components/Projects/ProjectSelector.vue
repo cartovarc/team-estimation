@@ -7,6 +7,7 @@
     bg-color="white"
     :options="projectsArray"
     label="Project"
+    @input="$emit('projectChanged')"
   >
     <template v-slot:prepend>
       <div class="row">

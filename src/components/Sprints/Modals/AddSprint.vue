@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <modal-header>Add sprint</modal-header>
+    <modal-header>Add sprint to {{ globalSelectedProject.label }}</modal-header>
     <q-form @submit="submitForm()">
       <q-card-section class="q-pt-none">
         <modal-model-name
@@ -23,11 +23,14 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import addEditSprintMixin from "src/mixins/mixin-add-edit-model.js";
 
 export default {
   mixins: [addEditSprintMixin],
+  computed: {
+    ...mapState("projects", ["globalSelectedProject"])
+  },
   data() {
     return {
       sprintToSubmit: {
@@ -40,6 +43,7 @@ export default {
   methods: {
     ...mapActions("sprints", ["addSprint"]),
     submitModel() {
+      this.sprintToSubmit["project"] = this.globalSelectedProject.value;
       this.addSprint(this.sprintToSubmit);
       this.$emit("close");
     },

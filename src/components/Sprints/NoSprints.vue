@@ -1,14 +1,10 @@
 <template>
-  <transition
-    appear
-    enter-active-class="animated zoomIn"
-    leave-active-class="animated zoomOut absolute-top"
-  >
+  <transition appear enter-active-class="animated zoomIn">
     <q-banner class="bg-grey-3">
       <template v-slot:avatar>
-        <q-icon name="check" color="primary" />
+        <q-icon name="warning" color="primary" />
       </template>
-      No sprints :(
+      No sprints in {{ globalSelectedProject.label }}
       <template v-slot:action>
         <q-btn
           @click="$root.$emit('showAddSprint')"
@@ -22,5 +18,10 @@
 </template>
 
 <script>
-export default {};
+import { mapState } from "vuex";
+export default {
+  computed: {
+    ...mapState("projects", ["globalSelectedProject"])
+  }
+};
 </script>

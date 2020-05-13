@@ -1,6 +1,14 @@
 <template>
   <div class="q-pa-md">
-    <q-table title="Treats" :data="tableData" :columns="columns" row-key="name">
+    <proyect-selector @projectChanged="selectFirstSprint" />
+
+    <q-table
+      v-if="existsSprintInProject"
+      title="Treats"
+      :data="tableData"
+      :columns="columns"
+      row-key="name"
+    >
       <template v-slot:top>
         <q-select
           ref="sprintSelector"
@@ -98,9 +106,16 @@
               inline-actions
               class="text-white bg-green"
             >
-              User
-              <q-badge class="text-weight-bold" color="green-10">
-                {{ props.row.userCompleted }}
+              <span>
+                User
+              </span>
+
+              <q-badge class="text-weight-bold  q-ml-xs" color="green-10">
+                {{
+                  profiles[props.row.userCompleted]
+                    ? profiles[props.row.userCompleted].name
+                    : "Anonymous"
+                }}
               </q-badge>
               completed the activity in
               <q-badge class="text-weight-bold" color="green-10">
@@ -162,14 +177,33 @@ import { mapState, mapGetters } from "vuex";
 export default {
   computed: {
     ...mapState("sprints", ["sprints"]),
+    ...mapState("projects", ["globalSelectedProject"]),
     ...mapState("activities", ["activities"]),
     ...mapState("auth", ["profiles"]),
-
+    existsSprintInProject() {
+      let thisAux = this;
+      let exists = false;
+      Object.keys(this.sprints).map(function(sprintId) {
+        exists =
+          exists ||
+          thisAux.sprints[sprintId].project ==
+            thisAux.globalSelectedProject.value;
+      });
+      return exists;
+    },
     sprintsArray() {
       let thisAux = this;
-      return Object.keys(this.sprints).map(function(sprintId) {
-        return { label: thisAux.sprints[sprintId].name, value: sprintId };
-      });
+      return Object.keys(this.sprints)
+        .map(function(sprintId) {
+          return {
+            label: thisAux.sprints[sprintId].name,
+            value: sprintId,
+            project: thisAux.sprints[sprintId].project
+          };
+        })
+        .filter(function(element) {
+          return element.project == thisAux.globalSelectedProject.value;
+        });
     },
     sprintActivities() {
       try {
@@ -206,8 +240,12 @@ export default {
             })
             .forEach(function(payload) {
               let userEstimation = {
-                name: profiles[payload.uid].name,
-                imageURL: profiles[payload.uid].imageURL,
+                name: profiles[payload.uid]
+                  ? profiles[payload.uid].name
+                  : "Anonymous",
+                imageURL: profiles[payload.uid]
+                  ? profiles[payload.uid].imageURL
+                  : "https://static.thenounproject.com/png/574704-200.png",
                 effort: payload.estimation["effort"],
                 eh: payload.estimation["estimatedHours"],
                 ehu: payload.estimation["estimatedHoursWithUnforeseen"]
@@ -309,10 +347,19 @@ export default {
       } else if (colName == "ehu") {
         return "red";
       }
+    },
+    selectFirstSprint() {
+      if (this.sprintsArray) {
+        this.model = this.sprintsArray[0];
+      }
     }
   },
+  components: {
+    "proyect-selector": require("components/Projects/ProjectSelector.vue")
+      .default
+  },
   mounted() {
-    this.model = this.firstSprint();
+    this.selectFirstSprint();
   }
 };
 </script>

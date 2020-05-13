@@ -66,7 +66,11 @@
     </q-dialog>
 
     <q-dialog v-model="showAddActivity">
-      <add-activitie @close="showAddActivity = false" :sprintId="id" />
+      <add-activitie
+        @close="showAddActivity = false"
+        :sprintId="id"
+        :sprint="sprint"
+      />
     </q-dialog>
   </q-item>
 </template>

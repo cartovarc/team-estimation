@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <modal-header>Add activity</modal-header>
+    <modal-header>Add activity to {{ sprint.name }} </modal-header>
     <q-form @submit="submitForm()">
       <q-card-section class="q-pt-none">
         <modal-model-name
@@ -20,7 +20,7 @@ import addEditActivitieMixin from "src/mixins/mixin-add-edit-model.js";
 
 export default {
   mixins: [addEditActivitieMixin],
-  props: ["sprintId"],
+  props: ["sprint", "sprintId"],
   data() {
     return {
       activityToSubmit: {
