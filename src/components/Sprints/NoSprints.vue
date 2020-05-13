@@ -5,14 +5,6 @@
         <q-icon name="warning" color="primary" />
       </template>
       No sprints in {{ globalSelectedProject.label }}
-      <template v-slot:action>
-        <q-btn
-          @click="$root.$emit('showAddSprint')"
-          flat
-          color="primary"
-          label="Add sprint"
-        />
-      </template>
     </q-banner>
   </transition>
 </template>

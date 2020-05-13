@@ -2,20 +2,14 @@
   <q-layout view="hHh lpR fFf">
     <q-header elevated>
       <q-toolbar>
-        <q-toolbar-title :class="{ 'absolute-center': $q.screen.gt.xs }">
+        <q-toolbar-title
+          :class="{ 'absolute-center': $q.screen.gt.xs || !loggedIn }"
+        >
           Estimation
         </q-toolbar-title>
         <q-btn
-          v-if="!loggedIn"
-          to="/auth"
-          class="absolute-right"
-          icon-right="account_circle"
-          label="Login"
-          flat
-        />
-        <q-btn
           @click="logout"
-          v-else
+          v-if="loggedIn"
           class="absolute-right"
           label="Logout"
           flat
@@ -30,7 +24,7 @@
     </q-header>
 
     <q-footer>
-      <q-tabs>
+      <q-tabs v-if="loggedIn">
         <q-route-tab
           v-for="link in navLinks"
           :key="link.title"
@@ -39,6 +33,10 @@
           :to="link.to"
         />
       </q-tabs>
+      <q-tabs v-else>
+        <q-route-tab icon="help" label="Help" to="Help"/>
+        <q-route-tab icon="email" label="Contact" to="Contact"
+      /></q-tabs>
     </q-footer>
 
     <q-drawer
@@ -84,14 +82,14 @@ export default {
       leftDrawerOpen: false,
       navLinks: [
         {
-          title: "Estimate",
+          title: "Backlogs",
           caption:
             "Add sprints, add activities, make activities estimations, assign activities as completed and report their real time of completion",
           icon: "event",
           to: "/"
         },
         {
-          title: "Estimations",
+          title: "Results",
           caption: "See estimations from all users",
           icon: "description",
           to: "/estimations"

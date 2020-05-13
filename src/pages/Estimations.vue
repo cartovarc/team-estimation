@@ -2,6 +2,8 @@
   <div class="q-pa-md">
     <proyect-selector @projectChanged="selectFirstSprint" />
 
+    <no-sprints v-if="showNoSprints" @showAddSprint="showAddSprint = true" />
+
     <q-table
       v-if="existsSprintInProject"
       title="Treats"
@@ -117,6 +119,7 @@
                     : "Anonymous"
                 }}
               </q-badge>
+              <q-space />
               completed the activity in
               <q-badge class="text-weight-bold" color="green-10">
                 {{ props.row.realTime }} hours
@@ -190,6 +193,9 @@ export default {
             thisAux.globalSelectedProject.value;
       });
       return exists;
+    },
+    showNoSprints() {
+      return !this.existsSprintInProject && this.globalSelectedProject.value;
     },
     sprintsArray() {
       let thisAux = this;
@@ -356,7 +362,8 @@ export default {
   },
   components: {
     "proyect-selector": require("components/Projects/ProjectSelector.vue")
-      .default
+      .default,
+    "no-sprints": require("components/Sprints/NoSprints.vue").default
   },
   mounted() {
     this.selectFirstSprint();
