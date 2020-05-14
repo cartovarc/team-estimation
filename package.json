@@ -1,8 +1,8 @@
 {
-  "name": "simple-estimation",
+  "name": "team-estimation",
   "version": "0.0.1",
   "description": "An application to collaboratively estimate projects",
-  "productName": "Simple Estimation",
+  "productName": "Team Estimation",
   "cordovaId": "org.cordova.quasar.app",
   "capacitorId": "",
   "author": "Carlos Tovar <cartovarc@gmail.com>",

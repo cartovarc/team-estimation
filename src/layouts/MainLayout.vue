@@ -5,7 +5,7 @@
         <q-toolbar-title
           :class="{ 'absolute-center': $q.screen.gt.xs || !loggedIn }"
         >
-          Estimation
+          Team Estimation
         </q-toolbar-title>
         <q-btn
           @click="logout"

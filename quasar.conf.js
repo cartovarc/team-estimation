@@ -109,8 +109,8 @@ module.exports = function(/* ctx */) {
       workboxPluginMode: "GenerateSW", // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: "Simple Estimation",
-        short_name: "Simple Estimation",
+        name: "Team Estimation",
+        short_name: "Team Estimation",
         description: "An application to collaboratively estimate projects",
         display: "standalone",
         orientation: "portrait",
@@ -175,7 +175,7 @@ module.exports = function(/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: "simple-estimation"
+        appId: "team-estimation"
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
