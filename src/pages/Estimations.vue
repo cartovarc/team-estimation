@@ -78,6 +78,7 @@
         <q-tr :props="props">
           <q-td auto-width>
             <q-btn
+              v-if="props.row.usersEstimations.length"
               size="sm"
               color="grey-7"
               round
@@ -102,7 +103,7 @@
           </q-td>
         </q-tr>
         <q-tr v-show="props.expand" :props="props">
-          <q-td colspan="100%">
+          <q-td v-if="props.row.usersEstimations.length" colspan="100%">
             <q-banner
               v-if="props.row.completed"
               inline-actions
