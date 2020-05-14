@@ -5,7 +5,7 @@
         <template v-slot:avatar>
           <q-icon name="account_circle" color="primary" />
         </template>
-        Login / Register to access to tean estimation app
+        Login / Register to access to team estimation app
       </q-banner>
     </div>
     <div class="row q-mb-md">

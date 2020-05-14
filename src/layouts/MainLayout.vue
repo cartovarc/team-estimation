@@ -84,22 +84,23 @@ export default {
         {
           title: "Backlogs",
           caption:
-            "Add sprints, add activities, make activities estimations, assign activities as completed and report their real time of completion",
+            "Projects, sprints, activities, make activities estimations, assign activities as completed and report their real time of completion",
           icon: "event",
           to: "/"
         },
         {
           title: "Results",
-          caption: "See estimations from all users",
+          caption: "Summary of estimates and estimations from all users",
           icon: "description",
           to: "/estimations"
+        },
+        {
+          title: "Settings",
+          caption:
+            "Manage your team, user permissions and general configuration",
+          icon: "settings",
+          to: "/settings"
         }
-        //{
-        //  title: "Settings",
-        //  caption: "Configurations and parameters",
-        //  icon: "settings",
-        //   to: "/settings"
-        // }
       ]
     };
   },

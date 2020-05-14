@@ -78,7 +78,9 @@
         <q-tr :props="props">
           <q-td auto-width>
             <q-btn
-              v-if="props.row.usersEstimations.length"
+              v-if="
+                props.row.usersEstimations.length || props.row.userCompleted
+              "
               size="sm"
               color="grey-7"
               round
@@ -103,7 +105,10 @@
           </q-td>
         </q-tr>
         <q-tr v-show="props.expand" :props="props">
-          <q-td v-if="props.row.usersEstimations.length" colspan="100%">
+          <q-td
+            v-if="props.row.usersEstimations.length || props.row.userCompleted"
+            colspan="100%"
+          >
             <q-banner
               v-if="props.row.completed"
               inline-actions
@@ -126,7 +131,9 @@
                 {{ props.row.realTime }} hours
               </q-badge>
             </q-banner>
-            <q-item-label header>User estimations</q-item-label>
+            <q-item-label v-if="props.row.usersEstimations.length" header
+              >User estimations</q-item-label
+            >
 
             <q-list bordered class="rounded-borders">
               <q-item
