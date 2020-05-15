@@ -3,11 +3,10 @@ import { uid, Notify, date } from "quasar";
 import { firebaseDb } from "boot/firebase";
 import { showErrorMessage } from "src/functions/function-show-error-message";
 
-const enterpriseId = "SERNA";
-
 const state = {
   sprints: {},
-  sprintsDownloaded: false
+  sprintsDownloaded: false,
+  selectedOrganization: ""
 };
 
 const mutations = {
@@ -22,9 +21,13 @@ const mutations = {
   },
   clearSprints(state) {
     state.sprints = {};
+    state.sprintsDownloaded = false;
   },
   setSprintsDownloaded(state, value) {
     state.sprintsDownloaded = value;
+  },
+  updateSelectedOrganization(state, value) {
+    state.selectedOrganization = value;
   }
 };
 
@@ -37,6 +40,10 @@ const actions = {
     dispatch("fbDeleteSprint", id);
   },
 
+  updateSelectedOrganization({ commit }, value) {
+    commit("updateSelectedOrganization", value);
+  },
+
   addSprint({ dispatch }, sprint) {
     let id = uid();
     let payload = {
@@ -46,12 +53,18 @@ const actions = {
     dispatch("fbAddSprint", payload);
   },
 
+  clearSprints({ commit }) {
+    commit("clearSprints");
+  },
+
   setSprintsDownloaded({ commit }, value) {
     commit("setSprintsDownloaded", value);
   },
 
-  fbReadData({ commit, dispatch }) {
-    let enterpriseSprints = firebaseDb.ref("sprints/" + enterpriseId);
+  fbReadData({ commit, dispatch, state }) {
+    let enterpriseSprints = firebaseDb.ref(
+      "sprints/" + state.selectedOrganization
+    );
 
     // check initial data
     enterpriseSprints.once(
@@ -93,9 +106,9 @@ const actions = {
     });
   },
 
-  fbAddSprint({}, payload) {
+  fbAddSprint({ state }, payload) {
     let sprintRef = firebaseDb.ref(
-      "sprints/" + enterpriseId + "/" + payload.id
+      "sprints/" + state.selectedOrganization + "/" + payload.id
     );
     sprintRef.set(payload.sprint, error => {
       if (error) {
@@ -106,9 +119,9 @@ const actions = {
     });
   },
 
-  fbUpdateSprint({}, payload) {
+  fbUpdateSprint({ state }, payload) {
     let sprintRef = firebaseDb.ref(
-      "sprints/" + enterpriseId + "/" + payload.id
+      "sprints/" + state.selectedOrganization + "/" + payload.id
     );
     sprintRef.update(payload.updates, error => {
       if (error) {
@@ -119,8 +132,10 @@ const actions = {
     });
   },
 
-  fbDeleteSprint({}, sprintId) {
-    let sprintRef = firebaseDb.ref("sprints/" + enterpriseId + "/" + sprintId);
+  fbDeleteSprint({ state }, sprintId) {
+    let sprintRef = firebaseDb.ref(
+      "sprints/" + state.selectedOrganization + "/" + sprintId
+    );
     sprintRef.remove(error => {
       if (error) {
         showErrorMessage(error.message);

@@ -3,12 +3,11 @@ import { uid, Notify } from "quasar";
 import { firebaseDb, firebaseAuth } from "boot/firebase";
 import { showErrorMessage } from "src/functions/function-show-error-message";
 
-const enterpriseId = "SERNA";
-
 const state = {
   projects: {},
   globalSelectedProject: {},
-  projectsDownloaded: false
+  projectsDownloaded: false,
+  selectedOrganization: ""
 };
 
 const mutations = {
@@ -29,6 +28,9 @@ const mutations = {
   },
   setSelectedSelectedProject(state, value) {
     state.globalSelectedProject = value;
+  },
+  updateSelectedOrganization(state, value) {
+    state.selectedOrganization = value;
   }
 };
 
@@ -49,6 +51,9 @@ const actions = {
       project: payload.project
     });
   },
+  clearProjects({ commit }) {
+    commit("clearProjects");
+  },
 
   setProjectsDownloaded({ commit }, value) {
     commit("setProjectsDownloaded", value);
@@ -58,8 +63,14 @@ const actions = {
     commit("setSelectedSelectedProject", value);
   },
 
-  fbReadData({ commit }, enterpriseIdUseless) {
-    let enterpriseProjects = firebaseDb.ref("projects/" + enterpriseId);
+  updateSelectedOrganization({ commit }, value) {
+    commit("updateSelectedOrganization", value);
+  },
+
+  fbReadData({ commit, state }) {
+    let enterpriseProjects = firebaseDb.ref(
+      "projects/" + state.selectedOrganization
+    );
 
     // check initial data
     enterpriseProjects.once(
@@ -101,9 +112,9 @@ const actions = {
     });
   },
 
-  fbAddProject({}, payload) {
+  fbAddProject({ state }, payload) {
     let projectRef = firebaseDb.ref(
-      "projects/" + enterpriseId + "/" + payload.id
+      "projects/" + state.selectedOrganization + "/" + payload.id
     );
     projectRef.set(payload.project, error => {
       if (error) {
@@ -114,9 +125,9 @@ const actions = {
     });
   },
 
-  fbUpdateProject({}, payload) {
+  fbUpdateProject({ state }, payload) {
     let projectRef = firebaseDb.ref(
-      "projects/" + enterpriseId + "/" + payload.id
+      "projects/" + state.selectedOrganization + "/" + payload.id
     );
     projectRef.update(payload.updates, error => {
       if (error) {
@@ -127,8 +138,10 @@ const actions = {
     });
   },
 
-  fbDeleteProject({}, id) {
-    let projectRef = firebaseDb.ref("projects/" + enterpriseId + "/" + id);
+  fbDeleteProject({ state }, id) {
+    let projectRef = firebaseDb.ref(
+      "projects/" + state.selectedOrganization + "/" + id
+    );
     projectRef.remove(error => {
       if (error) {
         showErrorMessage(error.message);

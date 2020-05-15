@@ -115,12 +115,6 @@ export default {
   },
   computed: {
     activityDueTime() {
-      if (this.settings.show12HourTimeFormat) {
-        return date.formatDate(
-          this.activity.dueDate + " " + this.activity.dueTime,
-          "h:mmA"
-        );
-      }
       return this.activity.dueTime;
     }
   },

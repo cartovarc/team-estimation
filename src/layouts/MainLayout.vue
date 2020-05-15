@@ -5,7 +5,7 @@
         <q-toolbar-title
           :class="{ 'absolute-center': $q.screen.gt.xs || !loggedIn }"
         >
-          Team Estimation
+          {{ selectedOrganization }}
         </q-toolbar-title>
         <q-btn
           @click="logout"
@@ -75,7 +75,8 @@ export default {
   },
 
   computed: {
-    ...mapState("auth", ["loggedIn", "photoURL"])
+    ...mapState("auth", ["loggedIn", "photoURL"]),
+    ...mapState("organizations", ["selectedOrganization"])
   },
   data() {
     return {
@@ -95,11 +96,10 @@ export default {
           to: "/estimations"
         },
         {
-          title: "Settings",
-          caption:
-            "Manage your team, user permissions and general configuration",
-          icon: "settings",
-          to: "/settings"
+          title: "Organizations",
+          caption: "Manage your organizations team",
+          icon: "home_work",
+          to: "/organizations"
         }
       ]
     };

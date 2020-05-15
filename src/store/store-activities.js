@@ -3,11 +3,10 @@ import { uid, Notify } from "quasar";
 import { firebaseDb, firebaseAuth } from "boot/firebase";
 import { showErrorMessage } from "src/functions/function-show-error-message";
 
-const enterpriseId = "SERNA";
-
 const state = {
   activities: {},
-  activitiesDownloaded: false
+  activitiesDownloaded: false,
+  selectedOrganization: ""
 };
 
 const mutations = {
@@ -35,6 +34,9 @@ const mutations = {
   },
   setActivitiesDownloaded(state, value) {
     state.activitiesDownloaded = value;
+  },
+  updateSelectedOrganization(state, value) {
+    state.selectedOrganization = value;
   }
 };
 
@@ -64,9 +66,13 @@ const actions = {
     commit("setActivitiesDownloaded", value);
   },
 
-  fbReadData({ commit }, sprintId) {
+  updateSelectedOrganization({ commit }, value) {
+    commit("updateSelectedOrganization", value);
+  },
+
+  fbReadData({ commit, state }, sprintId) {
     let sprintActivities = firebaseDb
-      .ref("activities/" + enterpriseId)
+      .ref("activities/" + state.selectedOrganization)
       .orderByChild("sprint")
       .equalTo(sprintId);
 
@@ -111,9 +117,9 @@ const actions = {
     });
   },
 
-  fbAddActivity({}, payload) {
+  fbAddActivity({ state }, payload) {
     let activitieRef = firebaseDb.ref(
-      "activities/" + enterpriseId + "/" + payload.id
+      "activities/" + state.selectedOrganization + "/" + payload.id
     );
     activitieRef.set(payload.activity, error => {
       if (error) {
@@ -124,9 +130,9 @@ const actions = {
     });
   },
 
-  fbUpdateActivity({}, payload) {
+  fbUpdateActivity({ state }, payload) {
     let activitieRef = firebaseDb.ref(
-      "activities/" + enterpriseId + "/" + payload.id
+      "activities/" + state.selectedOrganization + "/" + payload.id
     );
     activitieRef.update(payload.updates, error => {
       if (error) {
@@ -137,10 +143,10 @@ const actions = {
     });
   },
 
-  fbUpdateEstimation({}, payload) {
+  fbUpdateEstimation({ state }, payload) {
     let estimationRef = firebaseDb.ref(
       "activities/" +
-        enterpriseId +
+        state.selectedOrganization +
         "/" +
         payload.id +
         "/estimations/" +
@@ -153,7 +159,7 @@ const actions = {
       } else {
         // TODO: fix bug, needed for reactive in estimations pages
         let activityRef = firebaseDb.ref(
-          "activities/" + enterpriseId + "/" + payload.id
+          "activities/" + state.selectedOrganization + "/" + payload.id
         );
         activityRef.update({ lastChanged: Date.now() }, error => {
           if (error) {
@@ -165,8 +171,10 @@ const actions = {
     });
   },
 
-  fbDeleteActivity({}, id) {
-    let activityRef = firebaseDb.ref("activities/" + enterpriseId + "/" + id);
+  fbDeleteActivity({ state }, id) {
+    let activityRef = firebaseDb.ref(
+      "activities/" + state.selectedOrganization + "/" + id
+    );
     activityRef.remove(error => {
       if (error) {
         showErrorMessage(error.message);

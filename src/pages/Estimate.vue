@@ -10,7 +10,10 @@
             @showAddSprint="showAddSprint = true"
           />
 
-          <q-item-label v-else header class="q-pa-none"
+          <q-item-label
+            v-if="Object.keys(sprints).length"
+            header
+            class="q-pa-none q-mb-sm"
             >Sprints of "{{ globalSelectedProject.label }}"</q-item-label
           >
 

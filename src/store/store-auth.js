@@ -3,8 +3,6 @@ import { Loading, LocalStorage, Notify } from "quasar";
 import { showErrorMessage } from "src/functions/function-show-error-message";
 import Vue from "vue";
 
-const enterpriseId = "SERNA";
-
 const state = {
   loggedIn: false,
   profiles: {},
@@ -20,6 +18,9 @@ const mutations = {
   },
   setPhotoURL(state, value) {
     state.photoURL = value;
+  },
+  clearProfiles(state) {
+    state.profiles = {};
   }
 };
 
@@ -31,13 +32,16 @@ const actions = {
       .signInWithPopup(provider)
       .then(response => {
         let newUser = response.additionalUserInfo.isNewUser;
-        if (newUser) {
+        if (newUser || true) {
           dispatch("fbNewUser", response);
         }
       })
       .catch(error => {
         showErrorMessage(error.message);
       });
+  },
+  clearProfiles({ commit }) {
+    commit("clearProfiles");
   },
   logoutUser() {
     firebaseAuth.signOut();
@@ -50,9 +54,9 @@ const actions = {
         commit("setPhotoURL", user.photoURL);
         LocalStorage.set("loggedIn", true);
         this.$router.push("/").catch(err => {});
-        dispatch("projects/fbReadData", null, { root: true });
-        dispatch("sprints/fbReadData", null, { root: true });
-        dispatch("fbReadData");
+        dispatch("organizations/fbReadData", null, {
+          root: true
+        });
       } else {
         commit("sprints/clearSprints", null, { root: true });
         commit("sprints/setSprintsDownloaded", false, { root: true });
@@ -64,13 +68,12 @@ const actions = {
   },
   fbNewUser({}, payload) {
     let uid = payload.user.uid;
-    let imageUrlRef = firebaseDb.ref(
-      "profiles/" + enterpriseId + "/" + uid + "/"
-    );
+    let imageUrlRef = firebaseDb.ref("profiles/" + uid + "/");
     imageUrlRef.update(
       {
         imageURL: payload.additionalUserInfo.profile.picture,
-        name: payload.additionalUserInfo.profile.name
+        name: payload.additionalUserInfo.profile.name,
+        email: payload.additionalUserInfo.profile.email
       },
       error => {
         Loading.hide();
@@ -83,17 +86,24 @@ const actions = {
     );
   },
 
-  fbReadData({ commit }) {
-    let profiles = firebaseDb.ref("profiles/" + enterpriseId);
+  fbReadData({ commit }, selectedOrganization) {
+    commit("clearProfiles");
+    let organizationUsers = firebaseDb.ref(
+      "organizations/" + selectedOrganization + "/users"
+    );
 
     // child added
-    profiles.on("child_added", snapshot => {
-      let profile = snapshot.val();
-      let payload = {
-        id: snapshot.key,
-        profile: profile
-      };
-      commit("addProfile", payload);
+    organizationUsers.on("child_added", snapshot => {
+      let userId = snapshot.key;
+      let profile = firebaseDb.ref("profiles/" + userId);
+
+      profile.once("value", snapshot => {
+        let payload = {
+          id: snapshot.key,
+          profile: snapshot.val()
+        };
+        commit("addProfile", payload);
+      });
     });
   }
 };
