@@ -36,6 +36,10 @@ const actions = {
     dispatch("fbInvite", payload);
   },
 
+  cancelInvite({ dispatch }, payload) {
+    dispatch("fbCancelInvite", payload);
+  },
+
   fbReadData({ commit, dispatch }) {
     let uid = firebaseAuth.currentUser.uid;
     let userOrganizations = firebaseDb.ref("users/" + uid + "/organizations");
@@ -45,7 +49,7 @@ const actions = {
       let organizationId = snapshot.key;
 
       let organizationRef = firebaseDb.ref("organizations/" + organizationId);
-      organizationRef.once("value", snapshot => {
+      organizationRef.on("value", snapshot => {
         commit("addOrganization", {
           id: organizationId,
           organization: snapshot.val()
@@ -109,7 +113,7 @@ const actions = {
               let userRef = firebaseDb.ref("users/" + uid + "/organizations");
               let organization = {};
               organization[payload.id] = {
-                accepted: false
+                accepted: true
               };
               dispatch("updateSelectedOrganization", payload.id);
               userRef.update(organization, error => {
@@ -127,6 +131,36 @@ const actions = {
         showErrorMessage(error.message);
       }
     );
+  },
+
+  async fbCancelInvite({}, payload) {
+    Loading.show();
+
+    let uid = payload.uid;
+
+    let userOrganizationRef = firebaseDb.ref(
+      "organizations/" + payload.organization + "/users/" + uid
+    );
+
+    userOrganizationRef.remove(error => {
+      if (!error) {
+        let userRef = firebaseDb.ref(
+          "users/" + uid + "/organizations/" + payload.organization
+        );
+
+        userRef.remove(error => {
+          if (error) {
+            showErrorMessage(error.message);
+          } else {
+            Notify.create("Invitation canceled");
+          }
+        });
+      } else {
+        showErrorMessage(error.message);
+      }
+    });
+
+    Loading.hide();
   },
 
   fbUpdateSelectedOrganization({}, value) {
@@ -153,16 +187,25 @@ const actions = {
 
     if (userRecord) {
       let uid = userRecord.uid;
-      let userRef = firebaseDb.ref("users/" + uid + "/organizations");
-      let organization = {};
-      organization[payload.organization] = {
-        accepted: false
-      };
-      userRef.update(organization, error => {
-        if (error) {
-          showErrorMessage(error.message);
+
+      let userOrganizationRef = firebaseDb.ref(
+        "organizations/" + payload.organization + "/users/" + uid
+      );
+
+      userOrganizationRef.set(false, error => {
+        if (!error) {
+          let userRef = firebaseDb.ref("users/" + uid + "/organizations");
+          let organization = {};
+          organization[payload.organization] = false;
+          userRef.update(organization, error => {
+            if (error) {
+              showErrorMessage(error.message);
+            } else {
+              Notify.create("Invited");
+            }
+          });
         } else {
-          Notify.create("Invited");
+          showErrorMessage(error.message);
         }
       });
     }

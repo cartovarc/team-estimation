@@ -63,14 +63,34 @@
       </q-list>
 
       <q-item-label caption>Organizations invitations</q-item-label>
-      <q-list bordered padding class="rounded-borders">
-        <q-item>
+
+      <q-banner
+        v-if="!unacceptedOrganizations.length"
+        inline-actions
+        rounded
+        class="bg-grey text-white"
+      >
+        You dont have any organization invitation.
+      </q-banner>
+
+      <q-list
+        v-if="unacceptedOrganizations.length"
+        bordered
+        padding
+        class="rounded-borders"
+      >
+        <q-item
+          v-for="unacceptedOrganization in unacceptedOrganizations"
+          v-bind:key="unacceptedOrganization.id"
+        >
           <q-item-section avatar>
             <q-avatar icon="home_work" color="primary" text-color="white" />
           </q-item-section>
 
           <q-item-section>
-            <q-item-label lines="1">DANALYTICS</q-item-label>
+            <q-item-label lines="1">{{
+              unacceptedOrganization.id
+            }}</q-item-label>
           </q-item-section>
 
           <q-item-section side>
@@ -88,23 +108,49 @@
           >Sent invitations of {{ selectedOrganization }}</q-item-label
         >
 
-        <q-list bordered padding class="rounded-borders">
-          <q-item>
-            <q-item-section avatar>
-              <q-avatar icon="person" color="primary" text-color="white" />
-            </q-item-section>
+        <q-banner
+          v-if="!sentInvitations.length"
+          inline-actions
+          rounded
+          class="bg-grey text-white"
+        >
+          No invitations sent
+        </q-banner>
 
-            <q-item-section>
-              <q-item-label>cartovarc@gmail.com</q-item-label>
-              <q-item-label caption>
-                <q-badge class="q-ml-xs" label="Pending" />
-              </q-item-label>
-            </q-item-section>
+        <q-list v-else bordered padding class="rounded-borders">
+          <template v-for="uid in sentInvitations">
+            <q-item v-bind:key="uid">
+              <q-item-section avatar>
+                <q-avatar>
+                  <img
+                    :src="
+                      profiles[uid]
+                        ? profiles[uid].imageURL
+                        : 'https://static.thenounproject.com/png/574704-200.png'
+                    "
+                  />
+                </q-avatar>
+              </q-item-section>
 
-            <q-item-section side>
-              <q-btn dense icon="cancel" color="red" />
-            </q-item-section>
-          </q-item>
+              <q-item-section>
+                <q-item-label>{{
+                  profiles[uid] ? profiles[uid].name : "Unknown"
+                }}</q-item-label>
+                <q-item-label caption>
+                  <q-badge class="q-ml-xs" label="Pending" />
+                </q-item-label>
+              </q-item-section>
+
+              <q-item-section side>
+                <q-btn
+                  @click="cancelInvitation(uid)"
+                  dense
+                  icon="cancel"
+                  color="red"
+                />
+              </q-item-section>
+            </q-item>
+          </template>
         </q-list>
 
         <q-item-label caption
@@ -112,25 +158,44 @@
         >
 
         <q-list bordered padding class="rounded-borders">
-          <q-item>
-            <q-item-section avatar>
-              <q-avatar>
-                <img src="https://cdn.quasar.dev/img/avatar1.jpg" />
-              </q-avatar>
-            </q-item-section>
+          <template
+            v-for="(isMember, uid) in organizations[selectedOrganization].users"
+          >
+            <q-item v-if="isMember" v-bind:key="uid">
+              <q-item-section avatar>
+                <q-avatar>
+                  <img
+                    :src="
+                      profiles[uid]
+                        ? profiles[uid].imageURL
+                        : 'https://static.thenounproject.com/png/574704-200.png'
+                    "
+                  />
+                </q-avatar>
+              </q-item-section>
 
-            <q-item-section>
-              <q-item-label lines="1">Carlos Tovar</q-item-label>
-              <q-item-label caption lines="2">
-                <span class="text-weight-bold">Email:</span>
-                cartovarc@gmail.com
-              </q-item-label>
-            </q-item-section>
+              <q-item-section>
+                <q-item-label lines="1">{{
+                  profiles[uid] ? profiles[uid].name : "Unknown"
+                }}</q-item-label>
+                <q-item-label caption lines="2">
+                  <span class="text-weight-bold">Email:</span>
+                  {{ profiles[uid] ? profiles[uid].email : "Unknown" }}
+                </q-item-label>
+              </q-item-section>
 
-            <q-item-section side>
-              <q-btn dense class="q-mb-xs" color="red" icon="delete" />
-            </q-item-section>
-          </q-item>
+              <q-item-section
+                v-if="organizations[selectedOrganization].info.owner != uid"
+                side
+              >
+                <q-btn dense class="q-mb-xs" color="red" icon="delete" />
+              </q-item-section>
+
+              <q-item-section v-else side top>
+                Owner
+              </q-item-section>
+            </q-item>
+          </template>
         </q-list>
       </template>
     </div>
@@ -142,12 +207,13 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import { firebaseAuth } from "boot/firebase";
 
 export default {
   computed: {
     ...mapGetters("organizations", ["organizations", "selectedOrganization"]),
+    ...mapState("auth", ["profiles"]),
     organizationsArray() {
       let thisAux = this;
       return Object.keys(this.organizations).map(function(organizationId) {
@@ -155,6 +221,32 @@ export default {
           label: organizationId,
           value: organizationId
         };
+      });
+    },
+    unacceptedOrganizations() {
+      let thisAux = this;
+      let uid = "";
+
+      if (firebaseAuth.currentUser) {
+        uid = firebaseAuth.currentUser.uid;
+      }
+
+      return Object.keys(this.organizations)
+        .map(function(organizationId) {
+          return {
+            organization: thisAux.organizations[organizationId],
+            id: organizationId
+          };
+        })
+        .filter(value => {
+          return value.organization.users[uid] == false;
+        });
+    },
+    sentInvitations() {
+      return Object.keys(
+        this.organizations[this.selectedOrganization].users
+      ).filter(uid => {
+        return !this.organizations[this.selectedOrganization].users[uid];
       });
     },
     workingOrganization: {
@@ -169,13 +261,14 @@ export default {
       }
     },
     isOwner() {
-      let uid = firebaseAuth.currentUser.uid;
       return (
+        firebaseAuth.currentUser &&
         this.organizations &&
         this.selectedOrganization &&
         this.organizations[this.selectedOrganization] &&
         this.organizations[this.selectedOrganization].info &&
-        this.organizations[this.selectedOrganization].info.owner == uid
+        this.organizations[this.selectedOrganization].info.owner ==
+          firebaseAuth.currentUser.uid
       );
     }
   },
@@ -190,7 +283,8 @@ export default {
   methods: {
     ...mapActions("organizations", [
       "addOrganization",
-      "updateSelectedOrganization"
+      "updateSelectedOrganization",
+      "cancelInvite"
     ]),
     submitOrganization() {
       this.$refs.organizationInput.validate();
@@ -199,6 +293,12 @@ export default {
         this.organizationToSubmit = { name: "" };
         this.$refs.organizationInput.resetValidation();
       }
+    },
+    cancelInvitation(uid) {
+      this.cancelInvite({
+        uid: uid,
+        organization: this.selectedOrganization
+      });
     }
   },
   components: {
