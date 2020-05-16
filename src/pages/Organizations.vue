@@ -201,6 +201,7 @@
             >
               <q-btn
                 v-if="isOwner"
+                @click="cancelInvitation(uid)"
                 dense
                 class="q-mb-xs"
                 color="red"
