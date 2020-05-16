@@ -40,3 +40,5 @@ package-lock.json
 .firebase
 .firebaserc
 firebase.json
+functions/node_modules
+functions/package-lock.json

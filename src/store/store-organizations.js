@@ -1,6 +1,6 @@
 import Vue from "vue";
-import { Notify } from "quasar";
-import { firebaseDb, firebaseAuth } from "boot/firebase";
+import { Notify, Loading } from "quasar";
+import { firebaseDb, firebaseAuth, firebaseFunctions } from "boot/firebase";
 import { showErrorMessage } from "src/functions/function-show-error-message";
 
 const state = {
@@ -106,7 +106,6 @@ const actions = {
             if (error) {
               showErrorMessage(error.message);
             } else {
-              // similar to fbInvite, refactor needed
               let userRef = firebaseDb.ref("users/" + uid + "/organizations");
               let organization = {};
               organization[payload.id] = {
@@ -141,20 +140,33 @@ const actions = {
     });
   },
 
-  fbInvite({}, payload) {
-    let uid = firebaseAuth.currentUser.uid;
-    let userRef = firebaseDb.ref("users/" + uid + "/organizations");
-    let organization = {};
-    organization[payload.organization] = {
-      accepted: false
-    };
-    userRef.update(organization, error => {
-      if (error) {
-        showErrorMessage(error.message);
-      } else {
-        Notify.create("Organization added");
-      }
-    });
+  async fbInvite({}, payload) {
+    Loading.show();
+    let getUser = firebaseFunctions.httpsCallable("getUser");
+    let dataUser = {};
+    try {
+      dataUser = await getUser({ email: payload.email });
+    } catch (error) {
+      showErrorMessage("Email is not associated with an account");
+    }
+    let userRecord = dataUser.data;
+
+    if (userRecord) {
+      let uid = userRecord.uid;
+      let userRef = firebaseDb.ref("users/" + uid + "/organizations");
+      let organization = {};
+      organization[payload.organization] = {
+        accepted: false
+      };
+      userRef.update(organization, error => {
+        if (error) {
+          showErrorMessage(error.message);
+        } else {
+          Notify.create("Invited");
+        }
+      });
+    }
+    Loading.hide();
   }
 };
 

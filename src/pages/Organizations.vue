@@ -82,54 +82,57 @@
           </q-item-section>
         </q-item>
       </q-list>
-      <q-item-label caption lines="1"
-        >Sent invitations of {{ selectedOrganization }}</q-item-label
-      >
 
-      <q-list bordered padding class="rounded-borders">
-        <q-item>
-          <q-item-section avatar>
-            <q-avatar icon="person" color="primary" text-color="white" />
-          </q-item-section>
+      <template v-if="isOwner">
+        <q-item-label caption lines="1"
+          >Sent invitations of {{ selectedOrganization }}</q-item-label
+        >
 
-          <q-item-section>
-            <q-item-label>cartovarc@gmail.com</q-item-label>
-            <q-item-label caption>
-              <q-badge class="q-ml-xs" label="Pending" />
-            </q-item-label>
-          </q-item-section>
+        <q-list bordered padding class="rounded-borders">
+          <q-item>
+            <q-item-section avatar>
+              <q-avatar icon="person" color="primary" text-color="white" />
+            </q-item-section>
 
-          <q-item-section side>
-            <q-btn dense icon="cancel" color="red" />
-          </q-item-section>
-        </q-item>
-      </q-list>
+            <q-item-section>
+              <q-item-label>cartovarc@gmail.com</q-item-label>
+              <q-item-label caption>
+                <q-badge class="q-ml-xs" label="Pending" />
+              </q-item-label>
+            </q-item-section>
 
-      <q-item-label caption
-        >Team members of {{ selectedOrganization }}</q-item-label
-      >
+            <q-item-section side>
+              <q-btn dense icon="cancel" color="red" />
+            </q-item-section>
+          </q-item>
+        </q-list>
 
-      <q-list bordered padding class="rounded-borders">
-        <q-item>
-          <q-item-section avatar>
-            <q-avatar>
-              <img src="https://cdn.quasar.dev/img/avatar1.jpg" />
-            </q-avatar>
-          </q-item-section>
+        <q-item-label caption
+          >Team members of {{ selectedOrganization }}</q-item-label
+        >
 
-          <q-item-section>
-            <q-item-label lines="1">Carlos Tovar</q-item-label>
-            <q-item-label caption lines="2">
-              <span class="text-weight-bold">Email:</span>
-              cartovarc@gmail.com
-            </q-item-label>
-          </q-item-section>
+        <q-list bordered padding class="rounded-borders">
+          <q-item>
+            <q-item-section avatar>
+              <q-avatar>
+                <img src="https://cdn.quasar.dev/img/avatar1.jpg" />
+              </q-avatar>
+            </q-item-section>
 
-          <q-item-section side>
-            <q-btn dense class="q-mb-xs" color="red" icon="delete" />
-          </q-item-section>
-        </q-item>
-      </q-list>
+            <q-item-section>
+              <q-item-label lines="1">Carlos Tovar</q-item-label>
+              <q-item-label caption lines="2">
+                <span class="text-weight-bold">Email:</span>
+                cartovarc@gmail.com
+              </q-item-label>
+            </q-item-section>
+
+            <q-item-section side>
+              <q-btn dense class="q-mb-xs" color="red" icon="delete" />
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </template>
     </div>
 
     <q-dialog v-model="showInvite">
@@ -140,6 +143,7 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { firebaseAuth } from "boot/firebase";
 
 export default {
   computed: {
@@ -163,6 +167,16 @@ export default {
       set(value) {
         this.updateSelectedOrganization(value.value);
       }
+    },
+    isOwner() {
+      let uid = firebaseAuth.currentUser.uid;
+      return (
+        this.organizations &&
+        this.selectedOrganization &&
+        this.organizations[this.selectedOrganization] &&
+        this.organizations[this.selectedOrganization].info &&
+        this.organizations[this.selectedOrganization].info.owner == uid
+      );
     }
   },
   data() {
