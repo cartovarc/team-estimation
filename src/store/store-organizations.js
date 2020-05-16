@@ -40,6 +40,10 @@ const actions = {
     dispatch("fbCancelInvite", payload);
   },
 
+  acceptInvitate({ dispatch }, payload) {
+    dispatch("fbAcceptInvitate", payload);
+  },
+
   fbReadData({ commit, dispatch }) {
     let uid = firebaseAuth.currentUser.uid;
     let userOrganizations = firebaseDb.ref("users/" + uid + "/organizations");
@@ -112,10 +116,8 @@ const actions = {
             } else {
               let userRef = firebaseDb.ref("users/" + uid + "/organizations");
               let organization = {};
-              organization[payload.id] = {
-                accepted: true
-              };
-              dispatch("updateSelectedOrganization", payload.id);
+              (organization[payload.id] = true),
+                dispatch("updateSelectedOrganization", payload.id);
               userRef.update(organization, error => {
                 if (error) {
                   showErrorMessage(error.message);
@@ -153,6 +155,38 @@ const actions = {
             showErrorMessage(error.message);
           } else {
             Notify.create("Invitation canceled");
+          }
+        });
+      } else {
+        showErrorMessage(error.message);
+      }
+    });
+
+    Loading.hide();
+  },
+
+  // put on fb cloud function
+  async fbAcceptInvitate({ dispatch }, payload) {
+    Loading.show();
+
+    let uid = payload.uid;
+
+    let userOrganizationRef = firebaseDb.ref(
+      "organizations/" + payload.organization + "/users/" + uid
+    );
+
+    userOrganizationRef.set(true, error => {
+      if (!error) {
+        let userRef = firebaseDb.ref(
+          "users/" + uid + "/organizations/" + payload.organization
+        );
+
+        userRef.set(true, error => {
+          if (error) {
+            showErrorMessage(error.message);
+          } else {
+            dispatch("fbUpdateSelectedOrganization", payload.organization);
+            Notify.create("Invitation accepted");
           }
         });
       } else {

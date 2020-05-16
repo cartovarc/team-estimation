@@ -50,7 +50,7 @@
               label="Working organization"
             />
           </q-item-section>
-          <q-item-section side>
+          <q-item-section v-if="isOwner" side>
             <q-btn
               @click="showInvite = true"
               :disable="workingOrganization == 'No organizations found'"
@@ -94,11 +94,21 @@
           </q-item-section>
 
           <q-item-section side>
-            <q-btn dense color="green" icon="check_circle" />
+            <q-btn
+              @click="acceptInvitation(unacceptedOrganization.id)"
+              dense
+              color="green"
+              icon="check_circle"
+            />
           </q-item-section>
 
           <q-item-section side>
-            <q-btn dense color="red" icon="cancel" />
+            <q-btn
+              @click="cancelInvitation(null, unacceptedOrganization.id)"
+              dense
+              color="red"
+              icon="cancel"
+            />
           </q-item-section>
         </q-item>
       </q-list>
@@ -152,52 +162,58 @@
             </q-item>
           </template>
         </q-list>
-
-        <q-item-label caption
-          >Team members of {{ selectedOrganization }}</q-item-label
-        >
-
-        <q-list bordered padding class="rounded-borders">
-          <template
-            v-for="(isMember, uid) in organizations[selectedOrganization].users"
-          >
-            <q-item v-if="isMember" v-bind:key="uid">
-              <q-item-section avatar>
-                <q-avatar>
-                  <img
-                    :src="
-                      profiles[uid]
-                        ? profiles[uid].imageURL
-                        : 'https://static.thenounproject.com/png/574704-200.png'
-                    "
-                  />
-                </q-avatar>
-              </q-item-section>
-
-              <q-item-section>
-                <q-item-label lines="1">{{
-                  profiles[uid] ? profiles[uid].name : "Unknown"
-                }}</q-item-label>
-                <q-item-label caption lines="2">
-                  <span class="text-weight-bold">Email:</span>
-                  {{ profiles[uid] ? profiles[uid].email : "Unknown" }}
-                </q-item-label>
-              </q-item-section>
-
-              <q-item-section
-                v-if="organizations[selectedOrganization].info.owner != uid"
-                side
-              >
-                <q-btn dense class="q-mb-xs" color="red" icon="delete" />
-              </q-item-section>
-
-              <q-item-section v-else side top>
-                Owner
-              </q-item-section>
-            </q-item>
-          </template>
-        </q-list>
       </template>
+
+      <q-item-label caption
+        >Team members of {{ selectedOrganization }}</q-item-label
+      >
+
+      <q-list bordered padding class="rounded-borders">
+        <template
+          v-for="(isMember, uid) in organizations[selectedOrganization].users"
+        >
+          <q-item v-if="isMember" v-bind:key="uid">
+            <q-item-section avatar>
+              <q-avatar>
+                <img
+                  :src="
+                    profiles[uid]
+                      ? profiles[uid].imageURL
+                      : 'https://static.thenounproject.com/png/574704-200.png'
+                  "
+                />
+              </q-avatar>
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label lines="1">{{
+                profiles[uid] ? profiles[uid].name : "Unknown"
+              }}</q-item-label>
+              <q-item-label caption lines="2">
+                <span class="text-weight-bold">Email:</span>
+                {{ profiles[uid] ? profiles[uid].email : "Unknown" }}
+              </q-item-label>
+            </q-item-section>
+
+            <q-item-section
+              v-if="organizations[selectedOrganization].info.owner != uid"
+              side
+            >
+              <q-btn
+                v-if="isOwner"
+                dense
+                class="q-mb-xs"
+                color="red"
+                icon="delete"
+              />
+            </q-item-section>
+
+            <q-item-section v-else side top>
+              Owner
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-list>
     </div>
 
     <q-dialog v-model="showInvite">
@@ -215,13 +231,32 @@ export default {
     ...mapGetters("organizations", ["organizations", "selectedOrganization"]),
     ...mapState("auth", ["profiles"]),
     organizationsArray() {
+      let uid = "";
+
+      if (firebaseAuth.currentUser) {
+        uid = firebaseAuth.currentUser.uid;
+      }
+
       let thisAux = this;
-      return Object.keys(this.organizations).map(function(organizationId) {
-        return {
-          label: organizationId,
-          value: organizationId
-        };
-      });
+      return Object.keys(this.organizations)
+        .map(function(organizationId) {
+          return {
+            organization: thisAux.organizations[organizationId],
+            organizationId: organizationId
+          };
+        })
+        .filter(payload => {
+          if (!payload.organization) {
+            return false;
+          }
+          return payload.organization.users[uid] == true;
+        })
+        .map(payload => {
+          return {
+            label: payload.organizationId,
+            value: payload.organizationId
+          };
+        });
     },
     unacceptedOrganizations() {
       let thisAux = this;
@@ -284,7 +319,8 @@ export default {
     ...mapActions("organizations", [
       "addOrganization",
       "updateSelectedOrganization",
-      "cancelInvite"
+      "cancelInvite",
+      "acceptInvitate"
     ]),
     submitOrganization() {
       this.$refs.organizationInput.validate();
@@ -294,11 +330,31 @@ export default {
         this.$refs.organizationInput.resetValidation();
       }
     },
-    cancelInvitation(uid) {
-      this.cancelInvite({
-        uid: uid,
-        organization: this.selectedOrganization
-      });
+    cancelInvitation(uid, organization = null) {
+      if (organization) {
+        let uid = "";
+
+        if (firebaseAuth.currentUser) {
+          uid = firebaseAuth.currentUser.uid;
+        }
+        this.cancelInvite({
+          uid: uid,
+          organization: organization
+        });
+      } else {
+        this.cancelInvite({
+          uid: uid,
+          organization: this.selectedOrganization
+        });
+      }
+    },
+    acceptInvitation(organizationId) {
+      let uid = "";
+
+      if (firebaseAuth.currentUser) {
+        uid = firebaseAuth.currentUser.uid;
+      }
+      this.acceptInvitate({ uid: uid, organization: organizationId });
     }
   },
   components: {
