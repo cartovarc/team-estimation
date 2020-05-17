@@ -164,57 +164,57 @@
         </q-list>
       </template>
 
-      <q-item-label caption
-        >Team members of {{ selectedOrganization }}</q-item-label
-      >
-
-      <q-list bordered padding class="rounded-borders">
-        <template
-          v-for="(isMember, uid) in organizations[selectedOrganization].users"
+      <template v-if="selectedOrganization">
+        <q-item-label caption
+          >Team members of {{ selectedOrganization }}</q-item-label
         >
-          <q-item v-if="isMember" v-bind:key="uid">
-            <q-item-section avatar>
-              <q-avatar>
-                <img
-                  :src="
-                    profiles[uid]
-                      ? profiles[uid].imageURL
-                      : 'https://static.thenounproject.com/png/574704-200.png'
-                  "
+
+        <q-list bordered padding class="rounded-borders">
+          <template v-for="(isMember, uid) in acceptedUsers">
+            <q-item v-if="isMember" v-bind:key="uid">
+              <q-item-section avatar>
+                <q-avatar>
+                  <img
+                    :src="
+                      profiles[uid]
+                        ? profiles[uid].imageURL
+                        : 'https://static.thenounproject.com/png/574704-200.png'
+                    "
+                  />
+                </q-avatar>
+              </q-item-section>
+
+              <q-item-section>
+                <q-item-label lines="1">{{
+                  profiles[uid] ? profiles[uid].name : "Unknown"
+                }}</q-item-label>
+                <q-item-label caption lines="2">
+                  <span class="text-weight-bold">Email:</span>
+                  {{ profiles[uid] ? profiles[uid].email : "Unknown" }}
+                </q-item-label>
+              </q-item-section>
+
+              <q-item-section
+                v-if="organizations[selectedOrganization].info.owner != uid"
+                side
+              >
+                <q-btn
+                  v-if="isOwner"
+                  @click="cancelInvitation(uid)"
+                  dense
+                  class="q-mb-xs"
+                  color="red"
+                  icon="delete"
                 />
-              </q-avatar>
-            </q-item-section>
+              </q-item-section>
 
-            <q-item-section>
-              <q-item-label lines="1">{{
-                profiles[uid] ? profiles[uid].name : "Unknown"
-              }}</q-item-label>
-              <q-item-label caption lines="2">
-                <span class="text-weight-bold">Email:</span>
-                {{ profiles[uid] ? profiles[uid].email : "Unknown" }}
-              </q-item-label>
-            </q-item-section>
-
-            <q-item-section
-              v-if="organizations[selectedOrganization].info.owner != uid"
-              side
-            >
-              <q-btn
-                v-if="isOwner"
-                @click="cancelInvitation(uid)"
-                dense
-                class="q-mb-xs"
-                color="red"
-                icon="delete"
-              />
-            </q-item-section>
-
-            <q-item-section v-else side top>
-              Owner
-            </q-item-section>
-          </q-item>
-        </template>
-      </q-list>
+              <q-item-section v-else side top>
+                Owner
+              </q-item-section>
+            </q-item>
+          </template>
+        </q-list>
+      </template>
     </div>
 
     <q-dialog v-model="showInvite">
@@ -278,12 +278,23 @@ export default {
           return value.organization.users[uid] == false;
         });
     },
+    acceptedUsers() {
+      if (this.organizations[this.selectedOrganization]) {
+        return this.organizations[this.selectedOrganization].users;
+      } else {
+        return [];
+      }
+    },
     sentInvitations() {
-      return Object.keys(
-        this.organizations[this.selectedOrganization].users
-      ).filter(uid => {
-        return !this.organizations[this.selectedOrganization].users[uid];
-      });
+      if (this.organizations[this.selectedOrganization]) {
+        return Object.keys(
+          this.organizations[this.selectedOrganization].users
+        ).filter(uid => {
+          return !this.organizations[this.selectedOrganization].users[uid];
+        });
+      } else {
+        return [];
+      }
     },
     workingOrganization: {
       get() {
