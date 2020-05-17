@@ -164,7 +164,7 @@ const getters = {
       };
       return res;
     } catch (error) {
-      return { label: "No projects added yet", value: null };
+      return { label: "No projects", value: null };
     }
   },
   getProject: state => id => {

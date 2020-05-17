@@ -11,13 +11,13 @@
           />
 
           <q-item-label
-            v-if="Object.keys(sprints).length"
+            v-if="existsSprintInProject"
             header
             class="q-pa-none q-mb-sm"
             >Sprints of "{{ globalSelectedProject.label }}"</q-item-label
           >
 
-          <sprints v-if="Object.keys(sprints).length" :sprints="sprints" />
+          <sprints v-if="existsSprintInProject" :sprints="sprints" />
         </q-scroll-area>
 
         <div

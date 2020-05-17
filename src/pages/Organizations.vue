@@ -127,7 +127,7 @@
           No invitations sent
         </q-banner>
 
-        <q-list v-else bordered padding class="rounded-borders">
+        <q-list v-else bordered separator padding class="rounded-borders">
           <template v-for="uid in sentInvitations">
             <q-item v-bind:key="uid">
               <q-item-section avatar>
@@ -169,7 +169,7 @@
           >Team members of {{ selectedOrganization }}</q-item-label
         >
 
-        <q-list bordered padding class="rounded-borders">
+        <q-list bordered separator padding class="rounded-borders">
           <template v-for="(isMember, uid) in acceptedUsers">
             <q-item v-if="isMember" v-bind:key="uid">
               <q-item-section avatar>
@@ -215,6 +215,12 @@
           </template>
         </q-list>
       </template>
+
+      <q-item-label caption
+        >Projects permissions of {{ selectedOrganization }}</q-item-label
+      >
+
+      <projects-permissions />
     </div>
 
     <q-dialog v-model="showInvite">
@@ -370,7 +376,9 @@ export default {
     }
   },
   components: {
-    invite: require("src/components/Organizations/Modals/Invite.vue").default
+    invite: require("src/components/Organizations/Modals/Invite.vue").default,
+    "projects-permissions": require("src/components/Organizations/ProjectsPermissions.vue")
+      .default
   }
 };
 </script>
