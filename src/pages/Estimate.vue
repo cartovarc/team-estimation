@@ -11,13 +11,16 @@
           />
 
           <q-item-label
-            v-if="existsSprintInProject"
+            v-if="existsSprintInProject && isMember"
             header
             class="q-pa-none q-mb-sm"
             >Sprints of "{{ globalSelectedProject.label }}"</q-item-label
           >
 
-          <sprints v-if="existsSprintInProject" :sprints="sprints" />
+          <sprints
+            v-if="existsSprintInProject && isMember"
+            :sprints="sprints"
+          />
         </q-scroll-area>
 
         <div
@@ -50,6 +53,7 @@
 
 <script>
 import { mapGetters, mapState } from "vuex";
+import { firebaseAuth } from "boot/firebase";
 
 export default {
   data() {
@@ -61,6 +65,8 @@ export default {
     ...mapGetters("sprints", ["sprints"]),
     ...mapState("sprints", ["sprintsDownloaded"]),
     ...mapState("projects", ["globalSelectedProject"]),
+    ...mapState("members", ["members"]),
+
     existsSprintInProject() {
       let thisAux = this;
       let exists = false;
@@ -71,6 +77,22 @@ export default {
             thisAux.globalSelectedProject.value;
       });
       return exists;
+    },
+    isMember() {
+      let uid = firebaseAuth.currentUser.uid;
+      if (uid && this.globalSelectedProject.value) {
+        let isMember = false;
+        console.log(this.globalSelectedProject.value);
+        if (!this.members[this.globalSelectedProject.value]) {
+          return false;
+        }
+        this.members[this.globalSelectedProject.value].forEach(member => {
+          isMember = isMember || member.value == uid;
+        });
+        return isMember;
+      } else {
+        return false;
+      }
     },
     showNoSprints() {
       return !this.existsSprintInProject && this.globalSelectedProject.value;

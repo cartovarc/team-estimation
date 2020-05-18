@@ -1,43 +1,41 @@
 <template>
-  <span>
-    <q-select
-      filled
-      class="full-width"
-      v-model="selection"
-      multiple
-      :options="acceptedUsers"
-      use-chips
-      stack-label
-      :label="'Members of ' + project.name"
-    >
-      <template v-slot:after>
-        <q-btn
-          @click="showPermissionsModal = true"
-          dense
-          color="primary"
-          icon="settings"
-        />
-      </template>
-      <template v-slot:selected-item="scope">
-        <q-chip
-          dense
-          color="white"
-          text-color="primary"
-          class="q-my-none q-ml-xs q-mr-none"
-        >
-          <q-avatar>
-            <img :src="scope.opt.imageURL" />
-          </q-avatar>
-          <span class="text-caption">
-            {{ scope.opt.label }}
-          </span>
-        </q-chip>
-      </template>
-    </q-select>
+  <q-select
+    filled
+    class="full-width"
+    v-model="selection"
+    multiple
+    :options="acceptedUsers"
+    use-chips
+    stack-label
+    :label="'Members of ' + project.name"
+  >
+    <template v-slot:after>
+      <q-btn
+        @click="showPermissionsModal = true"
+        dense
+        color="primary"
+        icon="settings"
+      />
+    </template>
+    <template v-slot:selected-item="scope">
+      <q-chip
+        dense
+        color="white"
+        text-color="primary"
+        class="q-my-none q-ml-xs q-mr-none"
+      >
+        <q-avatar>
+          <img :src="scope.opt.imageURL" />
+        </q-avatar>
+        <span class="text-caption">
+          {{ scope.opt.label }}
+        </span>
+      </q-chip>
+    </template>
     <q-dialog v-model="showPermissionsModal">
       <permissions />
     </q-dialog>
-  </span>
+  </q-select>
 </template>
 <script>
 import { mapState, mapActions } from "vuex";

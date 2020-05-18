@@ -21,7 +21,7 @@
         />
         <q-btn
           @click.stop="showEditProject = true"
-          v-if="!emptyProjects"
+          v-if="!emptyProjects && isMember"
           size="sm"
           dense
           flat
@@ -29,7 +29,7 @@
           icon="edit"
         />
         <q-btn
-          v-if="!emptyProjects"
+          v-if="!emptyProjects && isMember"
           @click.stop="promptToDelete()"
           size="sm"
           flat
@@ -54,23 +54,62 @@
 
 <script>
 import { mapGetters, mapState, mapActions } from "vuex";
+import { firebaseAuth } from "boot/firebase";
 
 export default {
   computed: {
     ...mapGetters("projects", ["getProject"]),
     ...mapState("projects", ["projects", "globalSelectedProject"]),
+    ...mapState("members", ["members"]),
+
     emptyProjects() {
       return !this.globalSelectedProject.value;
     },
+    isMember() {
+      let uid = firebaseAuth.currentUser.uid;
+      if (uid && this.globalSelectedProject.value) {
+        let isMember = false;
+        console.log(this.globalSelectedProject.value);
+        if (!this.members[this.globalSelectedProject.value]) {
+          return false;
+        }
+        this.members[this.globalSelectedProject.value].forEach(member => {
+          isMember = isMember || member.value == uid;
+        });
+        return isMember;
+      } else {
+        return false;
+      }
+    },
     projectsArray() {
+      let uid = firebaseAuth.currentUser.uid;
+
       let thisAux = this;
-      return Object.keys(this.projects).map(function(projectId) {
-        return { label: thisAux.projects[projectId].name, value: projectId };
-      });
+      return Object.keys(this.projects)
+        .map(function(projectId) {
+          return { label: thisAux.projects[projectId].name, value: projectId };
+        })
+        .filter(value => {
+          if (this.members[value.value]) {
+            let isMember = false;
+            this.members[value.value].forEach(member => {
+              isMember = isMember || member.value == uid;
+            });
+            return isMember;
+          } else {
+            return false;
+          }
+        });
     },
     selectedProject: {
       get() {
-        return this.globalSelectedProject;
+        let exists = false;
+        this.projectsArray.forEach(value => {
+          exists = exists || this.globalSelectedProject.value == value.value;
+        });
+        return exists
+          ? this.globalSelectedProject
+          : { label: "No selected", value: null };
       },
       set(value) {
         this.setSelectedProject(value);
