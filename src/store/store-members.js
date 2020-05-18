@@ -4,7 +4,8 @@ import { firebaseDb, firebaseAuth, firebaseFunctions } from "boot/firebase";
 import { showErrorMessage } from "src/functions/function-show-error-message";
 
 const state = {
-  members: {} // projects ids
+  members: {}, // projects ids
+  permissions: {}
 };
 
 const mutations = {
@@ -54,7 +55,6 @@ const actions = {
     });
   },
   fbUpdateMembers({ state }, payload) {
-    console.log(payload);
     let membersProjectRef = firebaseDb.ref(
       "members/" + state.selectedOrganization + "/" + payload.id
     );

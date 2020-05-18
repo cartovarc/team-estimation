@@ -108,9 +108,6 @@ export default {
     ...mapActions("auth", ["logoutUser"]),
     logout() {
       this.logoutUser();
-    },
-    mounted() {
-      console.log(this.photoURL);
     }
   }
 };

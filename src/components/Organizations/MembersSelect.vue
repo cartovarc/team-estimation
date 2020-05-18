@@ -1,39 +1,55 @@
 <template>
-  <q-select
-    filled
-    class="full-width"
-    v-model="selection"
-    multiple
-    :options="acceptedUsers"
-    use-chips
-    stack-label
-    :label="'Members of ' + project.name"
-  >
-    <template v-slot:after>
-      <q-btn dense color="primary" icon="settings" />
-    </template>
-    <template v-slot:selected-item="scope">
-      <q-chip
-        dense
-        color="white"
-        text-color="primary"
-        class="q-my-none q-ml-xs q-mr-none"
-      >
-        <q-avatar>
-          <img :src="scope.opt.imageURL" />
-        </q-avatar>
-        <span class="text-caption">
-          {{ scope.opt.label }}
-        </span>
-      </q-chip>
-    </template>
-  </q-select>
+  <span>
+    <q-select
+      filled
+      class="full-width"
+      v-model="selection"
+      multiple
+      :options="acceptedUsers"
+      use-chips
+      stack-label
+      :label="'Members of ' + project.name"
+    >
+      <template v-slot:after>
+        <q-btn
+          @click="showPermissionsModal = true"
+          dense
+          color="primary"
+          icon="settings"
+        />
+      </template>
+      <template v-slot:selected-item="scope">
+        <q-chip
+          dense
+          color="white"
+          text-color="primary"
+          class="q-my-none q-ml-xs q-mr-none"
+        >
+          <q-avatar>
+            <img :src="scope.opt.imageURL" />
+          </q-avatar>
+          <span class="text-caption">
+            {{ scope.opt.label }}
+          </span>
+        </q-chip>
+      </template>
+    </q-select>
+    <q-dialog v-model="showPermissionsModal">
+      <permissions />
+    </q-dialog>
+  </span>
 </template>
 <script>
 import { mapState, mapActions } from "vuex";
 
 export default {
   props: ["project", "projectId"],
+
+  data() {
+    return {
+      showPermissionsModal: false
+    };
+  },
 
   computed: {
     ...mapState("organizations", ["selectedOrganization", "organizations"]),
@@ -68,6 +84,10 @@ export default {
   },
   methods: {
     ...mapActions("members", ["updateMembers"])
+  },
+  components: {
+    permissions: require("components/Organizations/Modals/Permissions.vue")
+      .default
   }
 };
 </script>
