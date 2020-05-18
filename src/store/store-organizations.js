@@ -83,15 +83,21 @@ const actions = {
         root: true
       });
 
+      dispatch("members/updateSelectedOrganization", selectedOrganization, {
+        root: true
+      });
+
       // clear all stores
       dispatch("auth/clearProfiles", null, { root: true });
       dispatch("projects/clearProjects", null, { root: true });
       dispatch("sprints/clearSprints", null, { root: true });
+      dispatch("members/clearMembers", null, { root: true });
 
       // read data from all stores
       dispatch("auth/fbReadData", null, { root: true });
       dispatch("projects/fbReadData", null, { root: true });
       dispatch("sprints/fbReadData", null, { root: true });
+      dispatch("members/fbReadData", null, { root: true });
     });
   },
 

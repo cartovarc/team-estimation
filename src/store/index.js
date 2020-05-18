@@ -5,6 +5,7 @@ import sprints from "./store-sprints";
 import activities from "./store-activities";
 import projects from "./store-projects";
 import organizations from "./store-organizations";
+import members from "./store-members";
 import auth from "./store-auth";
 
 Vue.use(Vuex);
@@ -25,6 +26,7 @@ export default function(/* { ssrContext } */) {
       activities,
       projects,
       organizations,
+      members,
       auth
     },
 
