@@ -82,7 +82,6 @@ export default {
       let uid = firebaseAuth.currentUser.uid;
       if (uid && this.globalSelectedProject.value) {
         let isMember = false;
-        console.log(this.globalSelectedProject.value);
         if (!this.members[this.globalSelectedProject.value]) {
           return false;
         }
