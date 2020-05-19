@@ -220,7 +220,16 @@
         >Projects permissions of {{ selectedOrganization }}</q-item-label
       >
 
-      <projects-permissions />
+      <q-banner
+        v-if="!existsProjects"
+        inline-actions
+        rounded
+        class="bg-grey text-white"
+      >
+        You dont have any projects
+      </q-banner>
+
+      <projects-permissions v-else />
     </div>
 
     <q-dialog v-model="showInvite">
@@ -235,6 +244,7 @@ import { firebaseAuth } from "boot/firebase";
 
 export default {
   computed: {
+    ...mapState("projects", ["projects"]),
     ...mapGetters("organizations", ["organizations", "selectedOrganization"]),
     ...mapState("auth", ["profiles"]),
     organizationsArray() {
@@ -323,6 +333,13 @@ export default {
         this.organizations[this.selectedOrganization].info.owner ==
           firebaseAuth.currentUser.uid
       );
+    },
+    existsProjects() {
+      if (this.projects == undefined) {
+        return false;
+      } else {
+        return Object.keys(this.projects).length;
+      }
     }
   },
   data() {

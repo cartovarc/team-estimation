@@ -122,7 +122,7 @@
                 {{
                   profiles[props.row.userCompleted]
                     ? profiles[props.row.userCompleted].name
-                    : "Anonymous"
+                    : "Unknown"
                 }}
               </q-badge>
               <q-space />
@@ -256,7 +256,7 @@ export default {
               let userEstimation = {
                 name: profiles[payload.uid]
                   ? profiles[payload.uid].name
-                  : "Anonymous",
+                  : "Unknown",
                 imageURL: profiles[payload.uid]
                   ? profiles[payload.uid].imageURL
                   : "https://static.thenounproject.com/png/574704-200.png",
@@ -339,7 +339,7 @@ export default {
       columns: [
         {
           name: "name",
-          label: "Acvitivy",
+          label: "Activity",
           align: "left"
         },
         { name: "total", label: "Total" },

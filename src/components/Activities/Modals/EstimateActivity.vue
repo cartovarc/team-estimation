@@ -10,7 +10,8 @@
             outlined
             :rules="[
               val => !!val || 'Field is required',
-              val => val <= 10 || 'Maximum 10 allowed'
+              val => parseInt(val) <= 10 || 'Maximum 10 allowed',
+              val => parseInt(val) >= 0 || 'Minimum 0 allowed'
             ]"
             clearable
             clear-icon="close"
@@ -40,7 +41,7 @@
             :rules="[
               val => !!val || 'Field is required',
               val =>
-                val >= estimationToSubmit.estimatedHours ||
+                parseInt(val) >= parseInt(estimationToSubmit.estimatedHours) ||
                 'This field must be greater or equal than estimated hours'
             ]"
             clearable

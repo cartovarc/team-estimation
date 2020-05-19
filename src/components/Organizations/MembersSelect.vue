@@ -69,11 +69,19 @@ export default {
           this.organizations[this.selectedOrganization].users
         ).map(uid => {
           let profile = this.profiles[uid];
-          return {
-            label: profile.name,
-            value: uid,
-            imageURL: profile.imageURL
-          };
+          if (profile) {
+            return {
+              label: profile.name,
+              value: uid,
+              imageURL: profile.imageURL
+            };
+          } else {
+            return {
+              label: "Unknown",
+              value: "Unknown",
+              imageURL: "https://static.thenounproject.com/png/574704-200.png"
+            };
+          }
         });
       } else {
         return [];
