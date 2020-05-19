@@ -25,9 +25,10 @@
           <q-item-section side>
             <q-btn
               @click="submitOrganization"
-              style="min-width: 80px"
+              style="min-width: 120px"
               color="green"
               label="New"
+              icon="add"
             />
           </q-item-section>
         </q-item>
@@ -54,8 +55,9 @@
             <q-btn
               @click="showInvite = true"
               :disable="workingOrganization == 'No organizations found'"
-              style="min-width: 80px"
+              style="min-width: 120px"
               color="primary"
+              icon="email"
               label="Invite"
             />
           </q-item-section>

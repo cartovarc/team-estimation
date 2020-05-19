@@ -81,6 +81,9 @@ export default {
       }
     },
     projectsArray() {
+      if (!firebaseAuth.currentUser) {
+        return [];
+      }
       let uid = firebaseAuth.currentUser.uid;
 
       let thisAux = this;

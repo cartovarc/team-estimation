@@ -61,6 +61,16 @@
                 </q-badge>
               </td>
             </tr>
+            <tr>
+              <td class="text-left text-weight-medium">
+                Total real time hours
+              </td>
+              <td class="text-right">
+                <q-badge class="text-weight-bold" color="purple">
+                  {{ summary.totalRealTime }}
+                </q-badge>
+              </td>
+            </tr>
           </tbody>
         </q-markup-table>
       </template>
@@ -246,6 +256,7 @@ export default {
         let ehu = 0;
         let estimationsCounter = 0;
         let total = 0;
+        let realTime = 0;
         let usersEstimations = [];
         if (activity.estimations) {
           Object.keys(activity.estimations)
@@ -288,7 +299,7 @@ export default {
           completed: activity.completed,
           lastChanged: activity.lastChanged,
           userCompleted: activity.userCompleted,
-          realTime: activity.realTime,
+          realTime: activity.realTime ? activity.realTime : "...",
           total: estimationsCounter,
           usersEstimations: usersEstimations,
           effort: effort,
@@ -304,6 +315,7 @@ export default {
       let totalEstimatedHours = 0;
       let totalEstimatedHoursWithUnforeseen = 0;
       let averageSprintEffort = 0;
+      let totalRealTime = 0;
       let totalEfforts = 0;
 
       this.tableData.forEach(function(reformedActivity) {
@@ -318,6 +330,10 @@ export default {
           averageSprintEffort += reformedActivity.effort;
           totalEfforts += 1;
         }
+
+        if (reformedActivity.realTime != "...") {
+          totalRealTime += parseInt(reformedActivity.realTime);
+        }
       });
 
       if (totalEfforts != 0) {
@@ -329,7 +345,8 @@ export default {
       return {
         totalEstimatedHours: totalEstimatedHours,
         totalEstimatedHoursWithUnforeseen: totalEstimatedHoursWithUnforeseen,
-        averageSprintEffort: averageSprintEffort
+        averageSprintEffort: averageSprintEffort,
+        totalRealTime: totalRealTime
       };
     }
   },
@@ -345,7 +362,8 @@ export default {
         { name: "total", label: "Total" },
         { name: "effort", label: "Effort" },
         { name: "eh", label: "EH" },
-        { name: "ehu", label: "EH (U)" }
+        { name: "ehu", label: "EH (U)" },
+        { name: "realTime", label: "Real" }
       ]
     };
   },
@@ -360,6 +378,8 @@ export default {
         return "green";
       } else if (colName == "ehu") {
         return "red";
+      } else {
+        return "green-9";
       }
     },
     selectFirstSprint() {
